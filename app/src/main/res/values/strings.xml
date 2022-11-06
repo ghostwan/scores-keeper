@@ -1,0 +1,9 @@
+<resources>
+	<string name="app_name">ScoresKeeper</string>
+	<string name="games">Games</string>
+	<string name="new_game">new game</string>
+	<string name="delete_book">delete book</string>
+	<string name="name">Name</string>
+	<string name="update_game">Update game</string>
+	<string name="update">update</string>
+</resources>
