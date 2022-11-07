@@ -18,23 +18,22 @@ class GamesViewModel @Inject constructor(
     private val repository: GameRepository
 ) : ViewModel() {
 
-    var game by mutableStateOf(Game(0, "", GameClassification.highest))
-    var isDialogOpened by mutableStateOf(false)
+    var dialogToDisplay:GameDialog by mutableStateOf(GameDialog.NoDialog)
 
     val gamesFlow = repository.getGames()
 
 
-    fun getGame(id: Int) = viewModelScope.launch(Dispatchers.IO) {
-        game = repository.getGame(id)
-    }
-
-    fun updateName(name: String) {
-        game = game.copy(name = name)
-    }
-
-    fun updateClassification(classification: GameClassification) {
-        game = game.copy(classification = classification)
-    }
+//    fun getGame(id: Int) = viewModelScope.launch(Dispatchers.IO) {
+//        game = repository.getGame(id)
+//    }
+//
+//    fun updateName(name: String) {
+//        game = game?.copy(name = name)
+//    }
+//
+//    fun updateClassification(classification: GameClassification) {
+//        game = game?.copy(classification = classification)
+//    }
 
     fun addGame(game: Game) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -54,11 +53,26 @@ class GamesViewModel @Inject constructor(
         }
     }
 
-    fun openDialog() {
-        isDialogOpened = true
+    fun openAddDialog() {
+        dialogToDisplay = GameDialog.AddDialog
     }
 
-    fun closeDialog() {
-        isDialogOpened = false
+    fun openEditDialog(game: Game) {
+        dialogToDisplay = GameDialog.EditDialog(game)
     }
+
+    fun openDeletionDialog(game: Game) {
+        dialogToDisplay = GameDialog.DeletionDialog(game)
+    }
+
+    fun closeDialogs() {
+        dialogToDisplay = GameDialog.NoDialog
+    }
+}
+
+sealed class GameDialog {
+    class EditDialog(val game: Game) : GameDialog()
+    object AddDialog : GameDialog()
+    class DeletionDialog(val game: Game) : GameDialog()
+    object NoDialog : GameDialog()
 }

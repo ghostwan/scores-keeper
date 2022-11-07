@@ -28,8 +28,7 @@ import com.ghostwan.scoreskeeper.model.Game
 import com.ghostwan.scoreskeeper.model.GameClassification
 
 @Composable
-fun GamesScreen(viewModel: GamesViewModel = hiltViewModel(),
-                navigateToUpdateGameScreen: (gameId: Int) -> Unit) {
+fun GamesScreen(viewModel: GamesViewModel = hiltViewModel()) {
 
     val games by viewModel.gamesFlow.collectAsState(
         emptyList()
@@ -43,23 +42,36 @@ fun GamesScreen(viewModel: GamesViewModel = hiltViewModel(),
             GamesContent(
                 padding = padding,
                 games = games,
-                deleteGame = { viewModel.deleteGame(it) },
-                navigateToUpdateGameScreen = navigateToUpdateGameScreen
+                onDeleteGame = { game -> viewModel.openDeletionDialog(game) },
+                onEditGame = { game -> viewModel.openEditDialog(game) }
             )
-            AddBookDialog(
-                isDialogOpened = viewModel.isDialogOpened,
-                closeDialog = {
-                    viewModel.closeDialog()
-                },
-                addGame = { game ->
-                    viewModel.addGame(game)
+            when (viewModel.dialogToDisplay) {
+                GameDialog.AddDialog -> {
+                    AddGameDialog(
+                        onAddGame = { game -> viewModel.addGame(game) },
+                        onDialogClosing = { viewModel.closeDialogs() }
+                    )
                 }
-            )
+                is GameDialog.EditDialog -> {
+                    EditGameDialog(
+                        game = (viewModel.dialogToDisplay as GameDialog.EditDialog).game,
+                        onEditGame = { game -> viewModel.updateGame(game) },
+                        onDialogClosing = { viewModel.closeDialogs()},
+                    )
+                }
+                is GameDialog.DeletionDialog -> {
+                    DeletionDialog(
+                        game = (viewModel.dialogToDisplay as GameDialog.DeletionDialog).game,
+                        onDialogClosing = { viewModel.closeDialogs() },
+                        onDeletingGame = { game -> viewModel.deleteGame(game)})
+                }
+                else -> {/* Hide the dialog*/ }
+            }
         },
         floatingActionButton = {
             AddGameFloatingActionButton(
-                openDialog = {
-                    viewModel.openDialog()
+                onClick = {
+                    viewModel.openAddDialog()
                 }
             )
         }
@@ -79,15 +91,15 @@ fun Preview() {
             Game(1, "Escalier", GameClassification.highest),
             Game(2, "Ratatouille", GameClassification.lowest),
         ),
-        deleteGame = { Toast.makeText(context, "deleting the game", Toast.LENGTH_SHORT).show()},
-        navigateToUpdateGameScreen = { Toast.makeText(context, "displaying update", Toast.LENGTH_SHORT).show()})
+        onDeleteGame = { Toast.makeText(context, "deleting the game", Toast.LENGTH_SHORT).show()},
+        onEditGame = { Toast.makeText(context, "displaying update", Toast.LENGTH_SHORT).show()})
 }
 
 @Composable
 fun GamesContent(padding: PaddingValues,
                  games: List<Game>,
-                 deleteGame: (game: Game) -> Unit,
-                 navigateToUpdateGameScreen: (bookId: Int) -> Unit) {
+                 onDeleteGame: (game: Game) -> Unit,
+                 onEditGame: (game: Game) -> Unit) {
 
     LazyColumn(
         modifier = Modifier
@@ -99,8 +111,8 @@ fun GamesContent(padding: PaddingValues,
         ) {
             GameCard(
                 game = it,
-                deleteGame = { deleteGame(it) },
-                navigateToUpdateGameScreen = navigateToUpdateGameScreen
+                deleteGame = { onDeleteGame(it) },
+                editGame = onEditGame
             )
         }
     }
@@ -108,8 +120,8 @@ fun GamesContent(padding: PaddingValues,
 }
 
 @Composable
-fun AddGameFloatingActionButton(openDialog: () -> Unit) {
-    FloatingActionButton(onClick = openDialog) {
+fun AddGameFloatingActionButton(onClick: () -> Unit) {
+    FloatingActionButton(onClick = onClick) {
         Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.new_game))
     }
 }
@@ -126,7 +138,7 @@ fun GamesTopBar() {
 fun GameCard(
     game: Game,
     deleteGame: () -> Unit,
-    navigateToUpdateGameScreen: (bookId: Int) -> Unit
+    editGame: (game: Game) -> Unit
 ) {
     Card(
         shape = MaterialTheme.shapes.small,
@@ -140,7 +152,7 @@ fun GameCard(
             .fillMaxWidth(),
         elevation = 3.dp,
         onClick = {
-            navigateToUpdateGameScreen(game.id)
+            editGame(game)
         }
     ) {
         Row(
