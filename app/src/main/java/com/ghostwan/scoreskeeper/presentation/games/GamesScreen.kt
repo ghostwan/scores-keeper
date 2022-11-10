@@ -1,20 +1,17 @@
-@file:OptIn(ExperimentalMaterialApi::class)
-
 package com.ghostwan.scoreskeeper.presentation.games
 
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -111,8 +108,8 @@ fun GamesContent(padding: PaddingValues,
         ) {
             GameCard(
                 game = it,
-                deleteGame = { onDeleteGame(it) },
-                editGame = onEditGame
+                onDeleteGame = { onDeleteGame(it) },
+                onEditGame = { onEditGame(it) }
             )
         }
     }
@@ -135,11 +132,44 @@ fun GamesTopBar() {
 }
 
 @Composable
+fun LongPressMenu(
+    isMenuDisplayed: Boolean,
+    onEditGame: () -> Unit,
+    onDeleteGame: () -> Unit,
+    onMenuClosing: ()-> Unit) {
+
+    DropdownMenu(
+        expanded = isMenuDisplayed,
+        onDismissRequest = onMenuClosing
+    ) {
+        DropdownMenuItem(
+            onClick = {
+                onEditGame()
+                onMenuClosing()
+            }
+        ) {
+            Text(text = "Edit")
+        }
+        DropdownMenuItem(
+            onClick = {
+                onDeleteGame()
+                onMenuClosing()
+            }
+        ) {
+            Text(text = "Delete")
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
 fun GameCard(
     game: Game,
-    deleteGame: () -> Unit,
-    editGame: (game: Game) -> Unit
+    onDeleteGame: () -> Unit,
+    onEditGame: () -> Unit,
 ) {
+    var isMenuDisplayed by remember { mutableStateOf(false) }
+
     Card(
         shape = MaterialTheme.shapes.small,
         modifier = Modifier
@@ -149,12 +179,19 @@ fun GameCard(
                 top = 4.dp,
                 bottom = 4.dp
             )
-            .fillMaxWidth(),
-        elevation = 3.dp,
-        onClick = {
-            editGame(game)
-        }
+            .fillMaxWidth()
+            .combinedClickable(onClick = {
+
+            },
+                onLongClick = {
+                    isMenuDisplayed = true
+                }),
+        elevation = 3.dp
     ) {
+        LongPressMenu(isMenuDisplayed, onEditGame, onDeleteGame) {
+            isMenuDisplayed = false
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -177,23 +214,12 @@ fun GameCard(
             Spacer(
                 modifier = Modifier.weight(1f)
             )
-            DeleteIcon(
-                deleteBook = deleteGame
+            Text(
+//                text = "${game.parties.size}",
+                text = "0",
+                color = MaterialTheme.colors.primary,
+                fontSize = 16.sp,
             )
         }
-    }
-}
-
-@Composable
-fun DeleteIcon(
-    deleteBook: () -> Unit
-) {
-    IconButton(
-        onClick = deleteBook
-    ) {
-        Icon(
-            imageVector = Icons.Default.Delete,
-            contentDescription = stringResource(R.string.delete_book),
-        )
     }
 }
