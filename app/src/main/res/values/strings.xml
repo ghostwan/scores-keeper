@@ -1,6 +1,7 @@
 <resources>
 	<string name="app_name">ScoresKeeper</string>
 	<string name="games">Games</string>
+	<string name="parties_title">Parties for %1$s</string>
 	<string name="new_game">new game</string>
 	<string name="delete_book">delete book</string>
 	<string name="name">Name</string>

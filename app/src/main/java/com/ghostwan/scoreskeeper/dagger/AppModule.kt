@@ -1,11 +1,11 @@
-package com.ghostwan.scoreskeeper.di
+package com.ghostwan.scoreskeeper.dagger
 
 import android.content.Context
 import androidx.room.Room
-import com.ghostwan.scoreskeeper.db.GameDao
-import com.ghostwan.scoreskeeper.db.GameDb
-import com.ghostwan.scoreskeeper.db.GameRepository
-import com.ghostwan.scoreskeeper.db.GameRepositoryImpl
+import com.ghostwan.scoreskeeper.dao.GameDao
+import com.ghostwan.scoreskeeper.database.GameDb
+import com.ghostwan.scoreskeeper.database.GameRepository
+import com.ghostwan.scoreskeeper.database.GameRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +17,7 @@ import dagger.hilt.components.SingletonComponent
 class AppModule {
     @Provides
     fun provideGameDb(@ApplicationContext context: Context): GameDb {
-        return Room.databaseBuilder(context, GameDb::class.java, GameDao.GAME_TABLE).build()
+        return Room.databaseBuilder(context, GameDb::class.java, "ScoresKeeperDB").build()
     }
 
     @Provides

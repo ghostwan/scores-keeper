@@ -2,11 +2,12 @@ package com.ghostwan.scoreskeeper.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType.Companion.IntType
+import androidx.navigation.NavType.Companion.LongType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.ghostwan.scoreskeeper.presentation.games.GamesScreen
+import com.ghostwan.scoreskeeper.presentation.parties.PartiesScreen
 
 @Composable
 fun NavGraph (
@@ -21,22 +22,21 @@ fun NavGraph (
         ) {
             GamesScreen()
         }
-//        val argumentGameID = "game_id"
-//        composable(
-//            route = "${Screen.UpdateGameScreen.route}/{$argumentGameID}",
-//            arguments = listOf(
-//                navArgument(argumentGameID) {
-//                    type = IntType
-//                }
-//            )
-//        ) {
-//            val gameId = it.arguments?.getInt(argumentGameID) ?: 0
-//            UpdateGameScreen(
-//                gameId = gameId,
-//                navigateBack = {
-//                    navController.popBackStack()
-//                }
-//            )
-//        }
+        val gameID = "game_id"
+        composable(
+            route = "${Screen.PartiesScreen.route}/{$gameID}",
+            arguments = listOf(
+                navArgument(gameID) {
+                    type = LongType
+                }
+            )
+        ) {
+            val gameId = it.arguments?.getInt(gameID) ?: 0
+            PartiesScreen(
+                gameId = gameId
+            ) {
+                navController.popBackStack()
+            }
+        }
     }
 }

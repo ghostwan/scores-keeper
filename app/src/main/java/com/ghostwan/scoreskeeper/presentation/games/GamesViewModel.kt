@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ghostwan.scoreskeeper.db.GameRepository
+import com.ghostwan.scoreskeeper.database.GameRepository
 import com.ghostwan.scoreskeeper.model.Game
-import com.ghostwan.scoreskeeper.model.GameClassification
+import com.ghostwan.scoreskeeper.model.Party
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

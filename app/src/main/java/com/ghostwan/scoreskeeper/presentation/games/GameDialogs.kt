@@ -20,10 +20,10 @@ import com.ghostwan.scoreskeeper.model.Game
 @Composable
 fun AddGameDialog(
     onAddGame: (game: Game) -> Unit,
-    onDialogClosing: () -> Unit
+    onClose: () -> Unit
 ) {
     AddOrEditGameDialog(
-        onDialogClosing = onDialogClosing,
+        onClose = onClose,
         onSubmit = { game -> onAddGame(game) }
     )
 }
@@ -32,10 +32,10 @@ fun AddGameDialog(
 fun EditGameDialog(
     game: Game,
     onEditGame: (game: Game) -> Unit,
-    onDialogClosing: () -> Unit
+    onClose: () -> Unit
 ) {
     AddOrEditGameDialog(
-        onDialogClosing = onDialogClosing,
+        onClose = onClose,
         onSubmit = { game2 -> onEditGame(game2) },
         game = game
     )
@@ -44,14 +44,14 @@ fun EditGameDialog(
 /**
  * Dialog that allow to add or edit a game
  *
- * @param onDialogClosing callback to call when dialog is closing
+ * @param onClose callback to call when dialog is closing
  * @param onAddGame callback to call when a game is added
  * @param onEditGame callback to call when a editing a game
  * @param game  game to edit, let null if you want to add a new game
  */
 @Composable
 private fun AddOrEditGameDialog(
-    onDialogClosing: () -> Unit,
+    onClose: () -> Unit,
     onSubmit: (game: Game) -> Unit,
     game: Game? = null
 ) {
@@ -62,7 +62,7 @@ private fun AddOrEditGameDialog(
     val focusRequester = FocusRequester()
 
     AlertDialog(
-        onDismissRequest = onDialogClosing,
+        onDismissRequest = onClose,
         title = { Text(if (editing) "Edit ${game?.name}" else "Add new game") },
         text = {
             Column {
@@ -83,7 +83,7 @@ private fun AddOrEditGameDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onDialogClosing()
+                    onClose()
                     onSubmit(Game(id, name))
                 }
             ) {
@@ -91,7 +91,7 @@ private fun AddOrEditGameDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDialogClosing) {
+            TextButton(onClick = onClose) {
                 Text(
                     text = "dismiss"
                 )
@@ -100,29 +100,3 @@ private fun AddOrEditGameDialog(
     )
 }
 
-@Composable
-fun DeletionDialog(game: Game,
-                   onDialogClosing: () -> Unit,
-                   onDeletingGame: (game: Game) -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDialogClosing,
-        title = { Text("Are you sure you want to delete ${game.name} ?") },
-        confirmButton = {
-            TextButton( onClick = {
-                onDeletingGame(game)
-                onDialogClosing()
-            }) {
-                Text(
-                    text = "confirm"
-                )
-            }
-        },
-        dismissButton = {
-            TextButton( onClick = onDialogClosing) {
-                Text(
-                    text = "dismiss"
-                )
-            }
-        }
-    )
-}

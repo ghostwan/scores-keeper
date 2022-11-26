@@ -1,4 +1,4 @@
-package com.ghostwan.scoreskeeper.presentation.games
+package com.ghostwan.scoreskeeper.presentation.parties
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -13,57 +13,54 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ghostwan.scoreskeeper.R
-import com.ghostwan.scoreskeeper.model.Game
-import com.ghostwan.scoreskeeper.model.GameClassification
+import com.ghostwan.scoreskeeper.model.Party
 import com.ghostwan.scoreskeeper.presentation.ui.DeletionDialog
+import java.util.*
 
 @Composable
-fun GamesScreen(viewModel: GamesViewModel = hiltViewModel()) {
+fun PartiesScreen(
+    gameId: Long,
+    viewModel: PartiesViewModel = hiltViewModel(),
+    navigateBack: () -> Boolean
+) {
 
-    val games by viewModel.gamesFlow.collectAsState(
-        emptyList()
-    )
+    LaunchedEffect(Unit) {
+        viewModel.getGame(gameId)
+    }
 
     Scaffold(
         topBar = {
-            GamesTopBar()
+            PartiesTopBar()
         },
         content = { padding ->
-            GamesContent(
+            PartiesContent(
                 padding = padding,
-                games = games,
+                parties = viewModel.game.parties,
             )
             when (viewModel.dialogToDisplay) {
-                GameDialog.AddDialog -> {
-                    AddGameDialog(
-                        onAddGame = { game -> viewModel.addGame(game) },
-                        onClose = { viewModel.closeDialogs() }
+                PartyDialog.AddDialog -> {
+                    AddPartyDialog(
+                        viewModel.game,
+                        onStart = { party -> viewModel.newParty(party) },
+                        onDialogClosing = { viewModel.closeDialogs() }
                     )
                 }
-                is GameDialog.EditDialog -> {
-                    EditGameDialog(
-                        game = (viewModel.dialogToDisplay as GameDialog.EditDialog).game,
-                        onEditGame = { game -> viewModel.updateGame(game) },
-                        onClose = { viewModel.closeDialogs()},
-                    )
-                }
-                is GameDialog.DeletionDialog -> {
+                is PartyDialog.DeletionDialog -> {
                     DeletionDialog(
-                        entity = (viewModel.dialogToDisplay as GameDialog.DeletionDialog).game,
+                        entity = (viewModel.dialogToDisplay as PartyDialog.DeletionDialog).party,
                         onClose = { viewModel.closeDialogs() },
-                        onDelete = { game -> viewModel.deleteGame(game)})
+                        onDelete = { party -> viewModel.deleteParty(party)})
                 }
                 else -> {/* Hide the dialog*/ }
             }
         },
         floatingActionButton = {
-            AddGameFloatingActionButton(
+            AddFloatingActionButton(
                 onClick = {
                     viewModel.openAddDialog()
                 }
@@ -77,19 +74,19 @@ fun GamesScreen(viewModel: GamesViewModel = hiltViewModel()) {
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFFFF)
 fun Preview() {
-    GamesContent(
+    PartiesContent(
         padding = PaddingValues(2.dp),
-        games = listOf(
-            Game(0, "Yaniv", GameClassification.LOWEST),
-            Game(1, "Escalier", GameClassification.HIGHEST),
-            Game(2, "Ratatouille", GameClassification.LOWEST),
+        parties = listOf(
+            Party(0, Date(), mutableListOf("Erwan", "Kai")),
+            Party(1, Date(), mutableListOf("Erwan", "Kai", "Arnold")),
+            Party(2, Date(), mutableListOf("Erwan", "Kai", "Arnold", "Camille")),
         )
     )
 }
 
 @Composable
-fun GamesContent(padding: PaddingValues,
-                 games: List<Game>) {
+fun PartiesContent(padding: PaddingValues,
+                   parties: List<Party>) {
 
     LazyColumn(
         modifier = Modifier
@@ -97,25 +94,25 @@ fun GamesContent(padding: PaddingValues,
             .padding(padding)
     ) {
         items(
-            items = games
+            items = parties
         ) {
-            GameCard(it)
+            PartyCard(it)
         }
     }
 
 }
 
 @Composable
-fun AddGameFloatingActionButton(onClick: () -> Unit) {
+fun AddFloatingActionButton(onClick: () -> Unit) {
     FloatingActionButton(onClick = onClick) {
         Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.new_game))
     }
 }
 
 @Composable
-fun GamesTopBar() {
+fun PartiesTopBar() {
     TopAppBar(
-        title = { Text(text = stringResource(R.string.games)) },
+        title = { Text(text = stringResource(R.string.parties_title)) },
         backgroundColor = MaterialTheme.colors.primary
     )
 }
@@ -123,9 +120,10 @@ fun GamesTopBar() {
 @Composable
 fun LongPressMenu(
     isMenuDisplayed: Boolean,
-    game: Game,
-    viewModel: GamesViewModel = hiltViewModel(),
-    onMenuClosing: ()-> Unit) {
+    party: Party,
+    viewModel: PartiesViewModel = hiltViewModel(),
+    onMenuClosing: ()-> Unit,
+) {
 
     DropdownMenu(
         expanded = isMenuDisplayed,
@@ -133,15 +131,7 @@ fun LongPressMenu(
     ) {
         DropdownMenuItem(
             onClick = {
-                viewModel.openEditDialog(game)
-                onMenuClosing()
-            }
-        ) {
-            Text(text = "Edit")
-        }
-        DropdownMenuItem(
-            onClick = {
-                viewModel.openDeletionDialog(game)
+                viewModel.deleteParty(party)
                 onMenuClosing()
             }
         ) {
@@ -152,7 +142,7 @@ fun LongPressMenu(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GameCard(game: Game) {
+fun PartyCard(party: Party) {
     var isMenuDisplayed by remember { mutableStateOf(false) }
 
     Card(
@@ -173,7 +163,7 @@ fun GameCard(game: Game) {
                 }),
         elevation = 3.dp
     ) {
-        LongPressMenu(isMenuDisplayed, game) {
+        LongPressMenu(isMenuDisplayed, party) {
             isMenuDisplayed = false
         }
 
@@ -185,25 +175,19 @@ fun GameCard(game: Game) {
         ) {
             Column {
                 Text(
-                    text = game.name,
+                    text = party.date.toString(),
                     color = Color.DarkGray,
                     fontSize = 25.sp
-                )
-                Text(
-                    text = game.classification.name,
-                    color = Color.DarkGray,
-                    fontSize = 12.sp,
-                    textDecoration = TextDecoration.Underline
                 )
             }
             Spacer(
                 modifier = Modifier.weight(1f)
             )
-            Text(
-                text = "${game.parties.size}",
-                color = MaterialTheme.colors.primary,
-                fontSize = 16.sp,
-            )
+//            Text(
+//                text = "${party.}",
+//                color = MaterialTheme.colors.primary,
+//                fontSize = 16.sp,
+//            )
         }
     }
 }

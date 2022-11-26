@@ -1,9 +1,9 @@
-package com.ghostwan.scoreskeeper.db
+package com.ghostwan.scoreskeeper.database
 
 import androidx.room.TypeConverter
 import java.util.*
 
-class Converters {
+class TimestampConverter {
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {
         return value?.let { Date(it) }
