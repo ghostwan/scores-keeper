@@ -1,20 +1,12 @@
 package com.ghostwan.scoreskeeper.database
 
-import androidx.room.*
-import com.ghostwan.scoreskeeper.dao.GameDao
 import com.ghostwan.scoreskeeper.model.Game
-import com.ghostwan.scoreskeeper.model.Party
+import io.realm.kotlin.Realm
 import kotlinx.coroutines.flow.Flow
+import io.realm.query
 
 
 typealias Games = List<Game>
-
-@Database(entities = [Game::class, Party::class], version = 1, exportSchema = false)
-@TypeConverters(TimestampConverter::class, PartyListConverter::class)
-abstract class GameDb : RoomDatabase() {
-    abstract fun gameDao(): GameDao
-}
-
 
 interface GameRepository {
     fun getGames() : Flow<Games>
@@ -28,12 +20,18 @@ interface GameRepository {
     fun deleteGame(game: Game)
 }
 
-class GameRepositoryImpl(private val gameDao: GameDao) : GameRepository {
-    override fun getGames(): Flow<Games> = gameDao.getGames()
+class GameRepositoryImpl(private val realm: Realm) : GameRepository {
+    override fun getGames(): Flow<Games>  {
+        realm.query(Game::class)
+    }
 
     override fun getGame(id: Long): Game = gameDao.getGame(id)
 
-    override fun addGame(game: Game) = gameDao.addGame(game)
+    override fun addGame(game: Game) {
+        realm.writeBlocking {
+            copyToRealm(game)
+        }
+    }
 
     override fun updateGame(game: Game) = gameDao.updateGame(game)
 

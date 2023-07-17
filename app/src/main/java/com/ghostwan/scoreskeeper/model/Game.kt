@@ -1,18 +1,11 @@
 package com.ghostwan.scoreskeeper.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.ghostwan.scoreskeeper.dao.GameDao
-import com.ghostwan.scoreskeeper.database.PartyListConverter
+import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PrimaryKey
 
-@Entity(tableName = GameDao.GAME_TABLE)
-data class Game(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long,
-    val name: String,
-    var classification: GameClassification = GameClassification.HIGHEST,
-    @TypeConverters(PartyListConverter::class)
-    val parties: MutableList<Party> = arrayListOf()
-//    val icon: String
-)
+class Game: RealmObject {
+    @PrimaryKey
+    var name: String = ""
+    var classification: GameClassification = GameClassification.HIGHEST
+    var parties: MutableList<Party> = arrayListOf()
+}

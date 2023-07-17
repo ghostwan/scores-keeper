@@ -1,32 +1,33 @@
 package com.ghostwan.scoreskeeper.dagger
 
-import android.content.Context
-import androidx.room.Room
 import com.ghostwan.scoreskeeper.dao.GameDao
 import com.ghostwan.scoreskeeper.database.GameDb
 import com.ghostwan.scoreskeeper.database.GameRepository
 import com.ghostwan.scoreskeeper.database.GameRepositoryImpl
+import com.ghostwan.scoreskeeper.model.Game
+import com.ghostwan.scoreskeeper.model.GameClassification
+import com.ghostwan.scoreskeeper.model.Party
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.realm.kotlin.Realm
+import io.realm.kotlin.RealmConfiguration
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
     @Provides
-    fun provideGameDb(@ApplicationContext context: Context): GameDb {
-        return Room.databaseBuilder(context, GameDb::class.java, "ScoresKeeperDB").build()
+    fun provideGameRepository(realm: Realm): GameRepository {
+        return GameRepositoryImpl(realm)
     }
 
     @Provides
-    fun provideGameDao(gameDb: GameDb) : GameDao {
-        return gameDb.gameDao()
-    }
-
-    @Provides
-    fun provideGameRepository(gameDao: GameDao) : GameRepository {
-        return GameRepositoryImpl(gameDao)
+    @Singleton
+    fun providesRealmDatabase(): Realm {
+        val configuration = RealmConfiguration.create(schema = setOf(Game::class, GameClassification::class, Party::class))
+        return Realm.open(configuration)
     }
 }
+

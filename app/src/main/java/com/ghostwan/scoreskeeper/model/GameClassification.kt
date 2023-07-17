@@ -1,6 +1,8 @@
 package com.ghostwan.scoreskeeper.model
 
-enum class GameClassification {
+import io.realm.kotlin.types.RealmObject
+
+enum class GameClassification : RealmObject {
     HIGHEST,
     LOWEST
 }
