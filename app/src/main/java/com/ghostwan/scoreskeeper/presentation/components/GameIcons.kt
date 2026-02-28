@@ -31,6 +31,7 @@ object GameIcons {
         "Visibility" to Icons.Default.Visibility,
         "FlashOn" to Icons.Default.FlashOn,
         "Anchor" to Icons.Default.Anchor,
+        "Leaderboard" to Icons.Default.Leaderboard,
     )
 
     fun getIcon(name: String): ImageVector =

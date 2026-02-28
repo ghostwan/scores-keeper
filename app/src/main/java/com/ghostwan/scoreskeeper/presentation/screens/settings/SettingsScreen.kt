@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.ghostwan.scoreskeeper.R
+import com.ghostwan.scoreskeeper.data.preferences.AiProvider
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,6 +34,7 @@ fun SettingsScreen(
     val syncState by viewModel.syncState.collectAsStateWithLifecycle()
     val chartAreaFill by viewModel.chartAreaFill.collectAsStateWithLifecycle()
     val chartStartFromZero by viewModel.chartStartFromZero.collectAsStateWithLifecycle()
+    val aiProvider by viewModel.aiProvider.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var showRestoreDialog by remember { mutableStateOf(false) }
@@ -285,6 +287,41 @@ fun SettingsScreen(
                         checked = chartStartFromZero,
                         onCheckedChange = viewModel::toggleChartStartFromZero,
                     )
+                }
+                HorizontalDivider()
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                ) {
+                    Text(
+                        stringResource(R.string.ai_provider_label),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Text(
+                        stringResource(R.string.ai_provider_description),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                        AiProvider.entries.forEachIndexed { index, provider ->
+                            SegmentedButton(
+                                selected = aiProvider == provider,
+                                onClick = { viewModel.setAiProvider(provider) },
+                                shape = SegmentedButtonDefaults.itemShape(
+                                    index = index,
+                                    count = AiProvider.entries.size,
+                                ),
+                            ) {
+                                Text(
+                                    provider.label,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    maxLines = 1,
+                                )
+                            }
+                        }
+                    }
                 }
             }
 

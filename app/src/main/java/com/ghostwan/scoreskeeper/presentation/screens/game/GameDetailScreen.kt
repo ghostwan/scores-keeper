@@ -49,6 +49,7 @@ fun GameDetailScreen(
     viewModel: GameDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val aiProvider by viewModel.aiProvider.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     LaunchedEffect(state.newSessionId) {
@@ -100,7 +101,7 @@ fun GameDetailScreen(
                                     },
                                 )
                                 DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.rules_ask_ai)) },
+                                    text = { Text(stringResource(R.string.rules_ask_ai) + " (${aiProvider.label})") },
                                     leadingIcon = { Icon(Icons.Default.AutoAwesome, null) },
                                     onClick = {
                                         showRulesMenu = false
@@ -117,7 +118,7 @@ fun GameDetailScreen(
                                             "Explique-moi les règles du jeu ${game.name} $langLabel de manière claire et concise",
                                             "UTF-8",
                                         )
-                                        val url = "https://chatgpt.com/?q=$prompt"
+                                        val url = aiProvider.urlTemplate.format(prompt)
                                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                                     },
                                 )

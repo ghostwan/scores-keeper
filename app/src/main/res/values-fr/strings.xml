@@ -93,6 +93,8 @@
     <string name="chart_area_fill_description">Remplir la zone sous les courbes de score</string>
     <string name="chart_start_from_zero">Départ à zéro</string>
     <string name="chart_start_from_zero_description">Les courbes de score démarrent à zéro au lieu du premier tour</string>
+    <string name="ai_provider_label">IA pour les règles du jeu</string>
+    <string name="ai_provider_description">Choisir quelle IA interroger pour les règles</string>
 
     <string name="about">À propos</string>
     <string name="version">Version %1$s</string>

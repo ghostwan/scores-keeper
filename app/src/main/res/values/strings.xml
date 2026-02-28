@@ -95,6 +95,8 @@
     <string name="chart_area_fill_description">Fill the area under score curves</string>
     <string name="chart_start_from_zero">Start from zero</string>
     <string name="chart_start_from_zero_description">Score curves start from zero instead of the first round</string>
+    <string name="ai_provider_label">AI for game rules</string>
+    <string name="ai_provider_description">Choose which AI to ask for game rules</string>
 
     <string name="about">About</string>
     <string name="version">Version %1$s</string>
