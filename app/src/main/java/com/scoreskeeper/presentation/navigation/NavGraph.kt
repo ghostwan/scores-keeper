@@ -1,6 +1,8 @@
 package com.scoreskeeper.presentation.navigation
 
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,6 +20,7 @@ fun ScoresKeeperNavGraph() {
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
+        modifier = Modifier.navigationBarsPadding(),
     ) {
         composable(Screen.Home.route) {
             HomeScreen(

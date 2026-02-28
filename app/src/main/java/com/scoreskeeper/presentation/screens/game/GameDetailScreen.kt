@@ -3,7 +3,9 @@ package com.scoreskeeper.presentation.screens.game
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -238,8 +240,10 @@ private fun NewSessionBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 32.dp),
+                .padding(bottom = 16.dp)
+                .navigationBarsPadding(),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
