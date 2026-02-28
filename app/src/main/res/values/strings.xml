@@ -16,6 +16,7 @@
     <string name="players_range">%1$d–%2$d players</string>
     <string name="players_range_unlimited">%1$d+ players</string>
     <string name="lowest_score_wins_suffix"> · Lowest score wins</string>
+    <string name="game_rules">Game rules</string>
     <string name="no_games_created">No games created</string>
     <string name="create_first_game">Create my first game</string>
 

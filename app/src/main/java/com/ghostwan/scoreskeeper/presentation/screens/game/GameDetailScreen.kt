@@ -30,7 +30,12 @@ import com.ghostwan.scoreskeeper.domain.model.SessionStatus
 import com.ghostwan.scoreskeeper.presentation.components.PlayerAvatar
 import com.ghostwan.scoreskeeper.presentation.screens.session.CreatePlayerViewModel
 import com.ghostwan.scoreskeeper.presentation.theme.PlayerColors
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
+import java.net.URLEncoder
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +45,7 @@ fun GameDetailScreen(
     viewModel: GameDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     LaunchedEffect(state.newSessionId) {
         state.newSessionId?.let { id ->
@@ -55,6 +61,21 @@ fun GameDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back))
+                    }
+                },
+                actions = {
+                    state.game?.let { game ->
+                        IconButton(onClick = {
+                            val lang = Locale.getDefault().language.let {
+                                if (it in listOf("fr", "es", "de")) it else "en"
+                            }
+                            val query = URLEncoder.encode(game.name, "UTF-8")
+                            val url = "https://$lang.wikipedia.org/wiki/Special:Search/$query"
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        }) {
+                            @Suppress("DEPRECATION")
+                            Icon(Icons.Default.MenuBook, stringResource(R.string.game_rules))
+                        }
                     }
                 },
             )
