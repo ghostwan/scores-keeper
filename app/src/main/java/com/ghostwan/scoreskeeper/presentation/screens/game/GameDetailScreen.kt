@@ -5,6 +5,9 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -66,16 +69,59 @@ fun GameDetailScreen(
                 },
                 actions = {
                     state.game?.let { game ->
-                        IconButton(onClick = {
-                            val lang = Locale.getDefault().language.let {
-                                if (it in listOf("fr", "es", "de")) it else "en"
+                        IconButton(onClick = viewModel::showIconPicker) {
+                            Icon(
+                                GameIcons.getIcon(game.icon),
+                                contentDescription = stringResource(R.string.game_icon_label),
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                        var showRulesMenu by remember { mutableStateOf(false) }
+                        Box {
+                            IconButton(onClick = { showRulesMenu = true }) {
+                                @Suppress("DEPRECATION")
+                                Icon(Icons.Default.MenuBook, stringResource(R.string.game_rules))
                             }
-                            val query = URLEncoder.encode(game.name, "UTF-8")
-                            val url = "https://$lang.wikipedia.org/wiki/Special:Search/$query"
-                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                        }) {
-                            @Suppress("DEPRECATION")
-                            Icon(Icons.Default.MenuBook, stringResource(R.string.game_rules))
+                            DropdownMenu(
+                                expanded = showRulesMenu,
+                                onDismissRequest = { showRulesMenu = false },
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.rules_wikipedia)) },
+                                    leadingIcon = { Icon(Icons.Default.Language, null) },
+                                    onClick = {
+                                        showRulesMenu = false
+                                        val lang = Locale.getDefault().language.let {
+                                            if (it in listOf("fr", "es", "de")) it else "en"
+                                        }
+                                        val query = URLEncoder.encode(game.name, "UTF-8")
+                                        val url = "https://$lang.wikipedia.org/wiki/Special:Search/$query"
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                                    },
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.rules_ask_ai)) },
+                                    leadingIcon = { Icon(Icons.Default.AutoAwesome, null) },
+                                    onClick = {
+                                        showRulesMenu = false
+                                        val lang = Locale.getDefault().language.let {
+                                            if (it in listOf("fr", "es", "de")) it else "en"
+                                        }
+                                        val langLabel = when (lang) {
+                                            "fr" -> "en français"
+                                            "es" -> "en español"
+                                            "de" -> "auf Deutsch"
+                                            else -> "in English"
+                                        }
+                                        val prompt = URLEncoder.encode(
+                                            "Explique-moi les règles du jeu ${game.name} $langLabel de manière claire et concise",
+                                            "UTF-8",
+                                        )
+                                        val url = "https://chatgpt.com/?q=$prompt"
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                                    },
+                                )
+                            }
                         }
                     }
                 },
@@ -160,6 +206,44 @@ fun GameDetailScreen(
             dismissButton = {
                 TextButton(onClick = viewModel::hideDeleteSessionDialog) { Text(stringResource(R.string.cancel)) }
             },
+        )
+    }
+
+    // Icon picker dialog
+    if (state.showIconPicker) {
+        AlertDialog(
+            onDismissRequest = viewModel::hideIconPicker,
+            title = { Text(stringResource(R.string.game_icon_label)) },
+            text = {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(5),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(GameIcons.entries) { (name, icon) ->
+                        val isSelected = state.game?.icon == name
+                        FilledIconButton(
+                            onClick = { viewModel.updateGameIcon(name) },
+                            modifier = Modifier.size(48.dp),
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = if (isSelected) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceVariant
+                                },
+                                contentColor = if (isSelected) {
+                                    MaterialTheme.colorScheme.onPrimary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                            ),
+                        ) {
+                            Icon(icon, contentDescription = name, modifier = Modifier.size(24.dp))
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
         )
     }
 

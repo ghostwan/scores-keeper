@@ -28,6 +28,7 @@ data class GameDetailUiState(
     val newSessionId: Long? = null,
     val showNewSessionSheet: Boolean = false,
     val sessionToDelete: Session? = null,
+    val showIconPicker: Boolean = false,
 )
 
 @HiltViewModel
@@ -95,6 +96,18 @@ class GameDetailViewModel @Inject constructor(
     }
 
     fun onSessionNavigated() = _uiState.update { it.copy(newSessionId = null) }
+
+    fun showIconPicker() = _uiState.update { it.copy(showIconPicker = true) }
+    fun hideIconPicker() = _uiState.update { it.copy(showIconPicker = false) }
+
+    fun updateGameIcon(icon: String) {
+        val game = _uiState.value.game ?: return
+        val updatedGame = game.copy(icon = icon)
+        _uiState.update { it.copy(game = updatedGame, showIconPicker = false) }
+        viewModelScope.launch {
+            gameRepository.updateGame(updatedGame)
+        }
+    }
 
     fun showDeleteSessionDialog(session: Session) =
         _uiState.update { it.copy(sessionToDelete = session) }
