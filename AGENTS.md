@@ -4,7 +4,7 @@ Guidelines for AI coding agents working in this Android codebase.
 
 **Toujours répondre en français à l'utilisateur.**
 
-**Après chaque instruction terminée, toujours commit et push sur `origin/main`.**
+**Après chaque instruction terminée, toujours compiler, installer et lancer l'app sur le téléphone connecté, puis commit et push sur `origin/main`.**
 
 ## Build & Run Commands
 
