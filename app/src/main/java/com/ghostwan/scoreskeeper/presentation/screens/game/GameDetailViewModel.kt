@@ -72,7 +72,7 @@ class GameDetailViewModel @Inject constructor(
 
     fun togglePlayerSelection(player: Player) {
         val current = _uiState.value.selectedPlayers
-        val maxPlayers = _uiState.value.game?.maxPlayers ?: 10
+        val maxPlayers = _uiState.value.game?.maxPlayers ?: Int.MAX_VALUE
         _uiState.update {
             it.copy(
                 selectedPlayers = if (player in current) {

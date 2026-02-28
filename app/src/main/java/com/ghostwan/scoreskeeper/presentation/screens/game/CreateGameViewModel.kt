@@ -15,7 +15,7 @@ data class CreateGameUiState(
     val name: String = "",
     val description: String = "",
     val minPlayers: Int = 2,
-    val maxPlayers: Int = 8,
+    val maxPlayers: Int = Int.MAX_VALUE,
     val lowestScoreWins: Boolean = false,
     val isLoading: Boolean = false,
     val saved: Boolean = false,
@@ -32,10 +32,14 @@ class CreateGameViewModel @Inject constructor(
     fun onNameChange(value: String) = _uiState.update { it.copy(name = value) }
     fun onDescriptionChange(value: String) = _uiState.update { it.copy(description = value) }
     fun onMinPlayersChange(value: Int) = _uiState.update {
-        it.copy(minPlayers = value.coerceIn(2, it.maxPlayers))
+        val max = if (it.maxPlayers == Int.MAX_VALUE) 99 else it.maxPlayers
+        it.copy(minPlayers = value.coerceIn(2, max))
     }
     fun onMaxPlayersChange(value: Int) = _uiState.update {
-        it.copy(maxPlayers = value.coerceIn(it.minPlayers, 20))
+        it.copy(maxPlayers = value.coerceAtLeast(it.minPlayers))
+    }
+    fun setMaxPlayersUnlimited() = _uiState.update {
+        it.copy(maxPlayers = Int.MAX_VALUE)
     }
     fun onLowestScoreWinsChange(value: Boolean) = _uiState.update { it.copy(lowestScoreWins = value) }
 

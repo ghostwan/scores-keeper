@@ -10,7 +10,7 @@ data class Game(
     val name: String,
     val description: String = "",
     val minPlayers: Int = 2,
-    val maxPlayers: Int = 10,
+    val maxPlayers: Int = Int.MAX_VALUE,
     val lowestScoreWins: Boolean = false,
     val createdAt: LocalDateTime = LocalDateTime.now(),
 )

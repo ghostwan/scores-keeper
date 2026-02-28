@@ -12,6 +12,7 @@
     <string name="delete_game_title">%1$s löschen?</string>
     <string name="delete_game_message">Alle zugehörigen Sitzungen werden ebenfalls gelöscht.</string>
     <string name="players_range">%1$d–%2$d Spieler</string>
+    <string name="players_range_unlimited">%1$d+ Spieler</string>
     <string name="lowest_score_wins_suffix"> · Niedrigste Punktzahl gewinnt</string>
     <string name="no_games_created">Keine Spiele erstellt</string>
     <string name="create_first_game">Mein erstes Spiel erstellen</string>
@@ -43,6 +44,7 @@
     <string name="status_finished">Beendet</string>
     <string name="choose_players">Spieler auswählen</string>
     <string name="players_selection_subtitle">%1$d bis %2$d Spieler — %3$d ausgewählt</string>
+    <string name="players_selection_subtitle_unlimited">%1$d+ Spieler — %2$d ausgewählt</string>
     <string name="add_player">Spieler hinzufügen</string>
     <string name="no_players_created">Keine Spieler erstellt. Tippen Sie auf +, um einen hinzuzufügen.</string>
     <string name="start_session">Sitzung starten</string>

@@ -57,7 +57,7 @@ class DriveBackupService @Inject constructor(
             }
 
             // Close WAL checkpoint to ensure all data is in the main db file
-            database.openHelper.writableDatabase.execSQL("PRAGMA wal_checkpoint(FULL)")
+            database.openHelper.writableDatabase.query("PRAGMA wal_checkpoint(FULL)").close()
 
             // Check if backup already exists
             val existingFileId = findBackupFile(driveService)

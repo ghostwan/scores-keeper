@@ -94,7 +94,7 @@ fun CreateGameScreen(
                     PlayerCountPicker(
                         value = state.minPlayers,
                         min = 2,
-                        max = state.maxPlayers,
+                        max = if (state.maxPlayers == Int.MAX_VALUE) 99 else state.maxPlayers,
                         onValueChange = viewModel::onMinPlayersChange,
                     )
                 }
@@ -105,11 +105,11 @@ fun CreateGameScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.height(4.dp))
-                    PlayerCountPicker(
+                    MaxPlayerCountPicker(
                         value = state.maxPlayers,
                         min = state.minPlayers,
-                        max = 20,
                         onValueChange = viewModel::onMaxPlayersChange,
+                        onUnlimited = viewModel::setMaxPlayersUnlimited,
                     )
                 }
             }
@@ -179,6 +179,60 @@ private fun PlayerCountPicker(
             modifier = Modifier.size(36.dp),
         ) {
             Text("+", style = MaterialTheme.typography.titleMedium)
+        }
+    }
+}
+
+@Composable
+private fun MaxPlayerCountPicker(
+    value: Int,
+    min: Int,
+    onValueChange: (Int) -> Unit,
+    onUnlimited: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val isUnlimited = value == Int.MAX_VALUE
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        FilledIconButton(
+            onClick = {
+                if (isUnlimited) {
+                    onValueChange(min)
+                } else {
+                    onValueChange(value - 1)
+                }
+            },
+            enabled = !isUnlimited && value > min,
+            modifier = Modifier.size(36.dp),
+        ) {
+            Text("-", style = MaterialTheme.typography.titleMedium)
+        }
+        Text(
+            text = if (isUnlimited) "\u221E" else value.toString(),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.widthIn(min = 32.dp),
+        )
+        FilledIconButton(
+            onClick = { onValueChange(value + 1) },
+            enabled = !isUnlimited,
+            modifier = Modifier.size(36.dp),
+        ) {
+            Text("+", style = MaterialTheme.typography.titleMedium)
+        }
+        FilledTonalIconButton(
+            onClick = {
+                if (isUnlimited) onValueChange(min) else onUnlimited()
+            },
+            modifier = Modifier.size(36.dp),
+            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                containerColor = if (isUnlimited) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = if (isUnlimited) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+        ) {
+            Text("\u221E", style = MaterialTheme.typography.titleMedium)
         }
     }
 }

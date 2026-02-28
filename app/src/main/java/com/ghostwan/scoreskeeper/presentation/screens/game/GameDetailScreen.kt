@@ -147,7 +147,7 @@ fun GameDetailScreen(
             allPlayers = state.allPlayers,
             selectedPlayers = state.selectedPlayers,
             minPlayers = state.game?.minPlayers ?: 2,
-            maxPlayers = state.game?.maxPlayers ?: 10,
+            maxPlayers = state.game?.maxPlayers ?: Int.MAX_VALUE,
             onTogglePlayer = viewModel::togglePlayerSelection,
             onConfirm = viewModel::createSession,
             onDismiss = viewModel::hideNewSessionSheet,
@@ -288,7 +288,11 @@ private fun NewSessionBottomSheet(
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        stringResource(R.string.players_selection_subtitle, minPlayers, maxPlayers, selectedPlayers.size),
+                        if (maxPlayers == Int.MAX_VALUE) {
+                            stringResource(R.string.players_selection_subtitle_unlimited, minPlayers, selectedPlayers.size)
+                        } else {
+                            stringResource(R.string.players_selection_subtitle, minPlayers, maxPlayers, selectedPlayers.size)
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

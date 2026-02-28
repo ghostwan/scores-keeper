@@ -148,8 +148,11 @@ private fun GameCard(
                     )
                 }
                 Text(
-                    text = stringResource(R.string.players_range, game.minPlayers, game.maxPlayers) +
-                            if (game.lowestScoreWins) stringResource(R.string.lowest_score_wins_suffix) else "",
+                    text = (if (game.maxPlayers == Int.MAX_VALUE) {
+                        stringResource(R.string.players_range_unlimited, game.minPlayers)
+                    } else {
+                        stringResource(R.string.players_range, game.minPlayers, game.maxPlayers)
+                    }) + if (game.lowestScoreWins) stringResource(R.string.lowest_score_wins_suffix) else "",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
