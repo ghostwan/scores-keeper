@@ -18,6 +18,8 @@ interface SessionRepository {
 
     suspend fun addRoundScore(roundScore: RoundScore)
     suspend fun deleteRoundScore(roundScore: RoundScore)
+    suspend fun updateRoundScores(roundScores: List<RoundScore>)
+    suspend fun deleteRound(sessionId: Long, round: Int)
     fun getRoundsForSession(sessionId: Long): Flow<List<RoundScore>>
 
     fun getPlayerStatsForGame(gameId: Long): Flow<List<PlayerStats>>

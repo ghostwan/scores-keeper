@@ -236,13 +236,16 @@ private fun NewSessionBottomSheet(
 ) {
     var showAddPlayerDialog by remember { mutableStateOf(false) }
 
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 48.dp),
+                .navigationBarsPadding()
+                .padding(bottom = 16.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

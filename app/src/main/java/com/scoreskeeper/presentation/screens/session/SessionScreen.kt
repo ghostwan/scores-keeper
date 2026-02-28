@@ -1,7 +1,9 @@
 package com.scoreskeeper.presentation.screens.session
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -47,6 +49,7 @@ fun SessionScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val detail = state.detail
+    val isInProgress = detail?.session?.status == SessionStatus.IN_PROGRESS
 
     Scaffold(
         topBar = {
@@ -58,7 +61,7 @@ fun SessionScreen(
                     }
                 },
                 actions = {
-                    if (detail?.session?.status == SessionStatus.IN_PROGRESS) {
+                    if (isInProgress) {
                         TextButton(onClick = viewModel::showFinishDialog) {
                             Text("Terminer")
                         }
@@ -67,7 +70,7 @@ fun SessionScreen(
             )
         },
         floatingActionButton = {
-            if (detail?.session?.status == SessionStatus.IN_PROGRESS) {
+            if (isInProgress) {
                 FloatingActionButton(onClick = viewModel::showScoreEntry) {
                     Icon(Icons.Default.Add, "Ajouter un tour")
                 }
@@ -150,20 +153,25 @@ fun SessionScreen(
                         round = round,
                         players = detail.players,
                         rounds = detail.rounds.filter { it.round == round },
+                        isEditable = isInProgress,
+                        onEdit = { viewModel.editRound(round) },
+                        onDelete = { viewModel.showDeleteRoundDialog(round) },
                     )
                 }
             }
         }
     }
 
-    // Score entry bottom sheet
+    // Score entry bottom sheet (for new round or editing)
     if (state.showScoreEntry) {
+        val isEditing = state.editingRound != null
         ScoreEntryBottomSheet(
             players = detail?.players ?: emptyList(),
-            roundNumber = detail?.currentRound ?: 1,
+            roundNumber = state.editingRound ?: (detail?.currentRound ?: 1),
             inputs = state.roundInputs,
+            isEditing = isEditing,
             onInput = viewModel::onScoreInput,
-            onConfirm = viewModel::submitRound,
+            onConfirm = if (isEditing) viewModel::submitEditRound else viewModel::submitRound,
             onDismiss = viewModel::hideScoreEntry,
         )
     }
@@ -179,6 +187,26 @@ fun SessionScreen(
             },
             dismissButton = {
                 TextButton(onClick = viewModel::hideFinishDialog) { Text("Annuler") }
+            },
+        )
+    }
+
+    // Delete round confirmation dialog
+    if (state.roundToDelete != null) {
+        AlertDialog(
+            onDismissRequest = viewModel::hideDeleteRoundDialog,
+            title = { Text("Supprimer le tour ${state.roundToDelete} ?") },
+            text = { Text("Les scores de ce tour seront supprimés définitivement.") },
+            confirmButton = {
+                Button(
+                    onClick = viewModel::confirmDeleteRound,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                    ),
+                ) { Text("Supprimer") }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::hideDeleteRoundDialog) { Text("Annuler") }
             },
         )
     }
@@ -291,27 +319,57 @@ private fun ScoreChart(detail: SessionDetail) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun RoundHistoryRow(
     round: Int,
     players: List<Player>,
     rounds: List<com.scoreskeeper.domain.model.RoundScore>,
+    isEditable: Boolean = false,
+    onEdit: () -> Unit = {},
+    onDelete: () -> Unit = {},
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 3.dp),
+            .padding(horizontal = 16.dp, vertical = 3.dp)
+            .then(
+                if (isEditable) {
+                    Modifier.combinedClickable(
+                        onClick = onEdit,
+                        onLongClick = onDelete,
+                    )
+                } else {
+                    Modifier
+                }
+            ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         ),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                "Tour $round",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = FontWeight.SemiBold,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "Tour $round",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                if (isEditable) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Modifier",
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        )
+                    }
+                }
+            }
             Spacer(Modifier.height(6.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -349,24 +407,33 @@ private fun ScoreEntryBottomSheet(
     players: List<Player>,
     roundNumber: Int,
     inputs: Map<Long, String>,
+    isEditing: Boolean = false,
     onInput: (Long, String) -> Unit,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val allFilled = players.all { inputs[it.id]?.toIntOrNull() != null }
+    val title = if (isEditing) {
+        "Modifier le tour $roundNumber"
+    } else {
+        "Tour $roundNumber — Saisir les scores"
+    }
 
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
+                .navigationBarsPadding()
                 .imePadding()
-                .padding(bottom = 48.dp),
+                .padding(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                "Tour $roundNumber — Saisir les scores",
+                title,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
@@ -404,7 +471,7 @@ private fun ScoreEntryBottomSheet(
                 enabled = allFilled,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Valider le tour")
+                Text(if (isEditing) "Modifier le tour" else "Valider le tour")
             }
         }
     }

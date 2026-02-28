@@ -124,6 +124,15 @@ class SessionRepositoryImpl @Inject constructor(
     override suspend fun deleteRoundScore(roundScore: RoundScore) =
         roundScoreDao.deleteRoundScore(roundScore.toEntity())
 
+    override suspend fun updateRoundScores(roundScores: List<RoundScore>) {
+        roundScores.forEach { roundScoreDao.updateRoundScore(it.toEntity()) }
+    }
+
+    override suspend fun deleteRound(sessionId: Long, round: Int) {
+        roundScoreDao.deleteRoundByNumber(sessionId, round)
+        roundScoreDao.decrementRoundsAfter(sessionId, round)
+    }
+
     override fun getRoundsForSession(sessionId: Long): Flow<List<RoundScore>> =
         roundScoreDao.getRoundsForSession(sessionId).map { list -> list.map { it.toDomain() } }
 
