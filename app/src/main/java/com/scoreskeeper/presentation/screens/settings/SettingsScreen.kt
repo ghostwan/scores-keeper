@@ -249,6 +249,7 @@ private fun GoogleSignInButton(
     onSignedIn: (email: String, displayName: String) -> Unit,
 ) {
     val context = LocalContext.current
+    val activity = context as Activity
     val scope = rememberCoroutineScope()
 
     Button(
@@ -266,7 +267,7 @@ private fun GoogleSignInButton(
                         .addCredentialOption(googleIdOption)
                         .build()
 
-                    val result = credentialManager.getCredential(context, request)
+                    val result = credentialManager.getCredential(activity, request)
                     val credential = result.credential
 
                     if (credential is CustomCredential &&
