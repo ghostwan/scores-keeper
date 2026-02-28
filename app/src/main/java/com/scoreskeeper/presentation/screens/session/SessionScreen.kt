@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -17,9 +18,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -420,6 +424,8 @@ private fun ScoreEntryBottomSheet(
         stringResource(R.string.new_round_title, roundNumber)
     }
 
+    val focusRequesters = remember(players) { players.map { FocusRequester() } }
+
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
@@ -440,7 +446,8 @@ private fun ScoreEntryBottomSheet(
             )
             Spacer(Modifier.height(4.dp))
 
-            players.forEach { player ->
+            players.forEachIndexed { index, player ->
+                val isLast = index == players.lastIndex
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -455,9 +462,24 @@ private fun ScoreEntryBottomSheet(
                     OutlinedTextField(
                         value = inputs[player.id] ?: "",
                         onValueChange = { onInput(player.id, it) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = if (isLast) ImeAction.Done else ImeAction.Next,
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                if (!isLast) {
+                                    focusRequesters[index + 1].requestFocus()
+                                }
+                            },
+                            onDone = {
+                                if (allFilled) onConfirm()
+                            },
+                        ),
                         singleLine = true,
-                        modifier = Modifier.width(100.dp),
+                        modifier = Modifier
+                            .width(100.dp)
+                            .focusRequester(focusRequesters[index]),
                         placeholder = { Text(stringResource(R.string.pts), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         isError = inputs[player.id]?.let {
                             it.isNotEmpty() && it != "-" && it.toIntOrNull() == null
@@ -474,6 +496,13 @@ private fun ScoreEntryBottomSheet(
             ) {
                 Text(if (isEditing) stringResource(R.string.edit_round_button) else stringResource(R.string.validate_round_button))
             }
+        }
+    }
+
+    // Auto-focus the first field when the sheet opens
+    LaunchedEffect(Unit) {
+        if (focusRequesters.isNotEmpty()) {
+            focusRequesters[0].requestFocus()
         }
     }
 }
