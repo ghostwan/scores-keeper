@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.scoreskeeper"
+    namespace = "com.ghostwan.scoreskeeper"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.scoreskeeper"
+        applicationId = "com.ghostwan.scoreskeeper"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

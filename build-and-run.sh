@@ -21,7 +21,7 @@ warn()    { echo -e "${YELLOW}[WARN]${NC}  $*"; }
 error()   { echo -e "${RED}[ERROR]${NC} $*" >&2; exit 1; }
 
 # ---- Config -------------------------------------------------
-APP_ID="com.scoreskeeper"
+APP_ID="com.ghostwan.scoreskeeper"
 ACTIVITY=".MainActivity"
 APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
 BUILD_VARIANT="assembleDebug"
