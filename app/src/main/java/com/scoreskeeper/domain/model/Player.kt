@@ -6,5 +6,5 @@ package com.scoreskeeper.domain.model
 data class Player(
     val id: Long = 0,
     val name: String,
-    val avatarColor: Long = 0xFF6200EE,
+    val avatarColor: Long = 0xFF6750A4L,
 )

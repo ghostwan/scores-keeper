@@ -21,7 +21,7 @@ class CreatePlayerViewModel @Inject constructor(
             createPlayerUseCase(
                 Player(
                     name = name.trim(),
-                    avatarColor = PlayerColors[colorIndex.coerceIn(0, PlayerColors.lastIndex)].toArgb().toLong(),
+                    avatarColor = PlayerColors[colorIndex.coerceIn(0, PlayerColors.lastIndex)].toArgb().toLong() and 0xFFFFFFFFL,
                 )
             )
             onCreated()

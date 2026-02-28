@@ -26,10 +26,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStartAxis
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.common.fill
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import com.scoreskeeper.domain.model.Player
 import com.scoreskeeper.domain.model.SessionDetail
 import com.scoreskeeper.domain.model.SessionStatus
@@ -217,19 +220,26 @@ private fun WinnerBanner(winners: List<Player>) {
 private fun ScoreChart(detail: SessionDetail) {
     val modelProducer = remember { CartesianChartModelProducer() }
     val maxRound = detail.rounds.maxOf { it.round }
+    val playerColors = detail.players.map { Color(it.avatarColor) }
 
     LaunchedEffect(detail.rounds) {
         modelProducer.runTransaction {
-            detail.players.forEach { player ->
-                val cumulativeScores = (1..maxRound).map { round ->
-                    detail.rounds
-                        .filter { it.playerId == player.id && it.round <= round }
-                        .sumOf { it.points }
-                        .toFloat()
+            lineSeries {
+                detail.players.forEach { player ->
+                    val cumulativeScores = (1..maxRound).map { round ->
+                        detail.rounds
+                            .filter { it.playerId == player.id && it.round <= round }
+                            .sumOf { it.points }
+                            .toFloat()
+                    }
+                    series(cumulativeScores)
                 }
-                lineSeries { series(cumulativeScores) }
             }
         }
+    }
+
+    val lineSpecs = playerColors.map { color ->
+        rememberLine(fill = LineCartesianLayer.LineFill.single(fill(color)))
     }
 
     Card(
@@ -237,18 +247,47 @@ private fun ScoreChart(detail: SessionDetail) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
     ) {
-        CartesianChartHost(
-            chart = rememberCartesianChart(
-                rememberLineCartesianLayer(),
-                startAxis = rememberStartAxis(),
-                bottomAxis = rememberBottomAxis(),
-            ),
-            modelProducer = modelProducer,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(8.dp),
-        )
+        Column(modifier = Modifier.padding(8.dp)) {
+            CartesianChartHost(
+                chart = rememberCartesianChart(
+                    rememberLineCartesianLayer(
+                        lineProvider = LineCartesianLayer.LineProvider.series(lineSpecs),
+                    ),
+                    startAxis = rememberStartAxis(),
+                    bottomAxis = rememberBottomAxis(),
+                ),
+                modelProducer = modelProducer,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+            )
+            // Légende
+            Spacer(Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                detail.players.forEach { player ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .background(Color(player.avatarColor), shape = androidx.compose.foundation.shape.CircleShape)
+                        )
+                        Text(
+                            text = player.name,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
