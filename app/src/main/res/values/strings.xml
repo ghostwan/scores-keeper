@@ -87,6 +87,8 @@
     <string name="display_section">Display</string>
     <string name="chart_area_fill">Area chart</string>
     <string name="chart_area_fill_description">Fill the area under score curves</string>
+    <string name="chart_start_from_zero">Start from zero</string>
+    <string name="chart_start_from_zero_description">Score curves start from zero instead of the first round</string>
 
     <string name="about">About</string>
     <string name="version">Version %1$s</string>

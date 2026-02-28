@@ -32,6 +32,7 @@ fun SettingsScreen(
 ) {
     val syncState by viewModel.syncState.collectAsStateWithLifecycle()
     val chartAreaFill by viewModel.chartAreaFill.collectAsStateWithLifecycle()
+    val chartStartFromZero by viewModel.chartStartFromZero.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var showRestoreDialog by remember { mutableStateOf(false) }
@@ -270,6 +271,29 @@ fun SettingsScreen(
                     Switch(
                         checked = chartAreaFill,
                         onCheckedChange = viewModel::toggleChartAreaFill,
+                    )
+                }
+                HorizontalDivider()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.chart_start_from_zero),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        Text(
+                            stringResource(R.string.chart_start_from_zero_description),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Switch(
+                        checked = chartStartFromZero,
+                        onCheckedChange = viewModel::toggleChartStartFromZero,
                     )
                 }
             }

@@ -32,6 +32,9 @@ class SettingsViewModel @Inject constructor(
     val chartAreaFill: StateFlow<Boolean> = appPreferences.chartAreaFill
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
+    val chartStartFromZero: StateFlow<Boolean> = appPreferences.chartStartFromZero
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message.asStateFlow()
 
@@ -58,6 +61,12 @@ class SettingsViewModel @Inject constructor(
     fun toggleChartAreaFill(enabled: Boolean) {
         viewModelScope.launch {
             appPreferences.setChartAreaFill(enabled)
+        }
+    }
+
+    fun toggleChartStartFromZero(enabled: Boolean) {
+        viewModelScope.launch {
+            appPreferences.setChartStartFromZero(enabled)
         }
     }
 

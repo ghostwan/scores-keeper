@@ -18,14 +18,24 @@ class AppPreferences @Inject constructor(
 ) {
     companion object {
         private val KEY_CHART_AREA_FILL = booleanPreferencesKey("chart_area_fill")
+        private val KEY_CHART_START_FROM_ZERO = booleanPreferencesKey("chart_start_from_zero")
     }
 
     val chartAreaFill: Flow<Boolean> = context.appPreferencesDataStore.data
         .map { prefs -> prefs[KEY_CHART_AREA_FILL] ?: true }
 
+    val chartStartFromZero: Flow<Boolean> = context.appPreferencesDataStore.data
+        .map { prefs -> prefs[KEY_CHART_START_FROM_ZERO] ?: false }
+
     suspend fun setChartAreaFill(enabled: Boolean) {
         context.appPreferencesDataStore.edit { prefs ->
             prefs[KEY_CHART_AREA_FILL] = enabled
+        }
+    }
+
+    suspend fun setChartStartFromZero(enabled: Boolean) {
+        context.appPreferencesDataStore.edit { prefs ->
+            prefs[KEY_CHART_START_FROM_ZERO] = enabled
         }
     }
 }

@@ -85,6 +85,8 @@
     <string name="display_section">Pantalla</string>
     <string name="chart_area_fill">Gráfico de área</string>
     <string name="chart_area_fill_description">Rellenar el área bajo las curvas de puntuación</string>
+    <string name="chart_start_from_zero">Empezar desde cero</string>
+    <string name="chart_start_from_zero_description">Las curvas de puntuación empiezan desde cero en vez de la primera ronda</string>
 
     <string name="about">Acerca de</string>
     <string name="version">Versión %1$s</string>

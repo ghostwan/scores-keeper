@@ -48,6 +48,9 @@ class SessionViewModel @Inject constructor(
     val chartAreaFill: StateFlow<Boolean> = appPreferences.chartAreaFill
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
+    val chartStartFromZero: StateFlow<Boolean> = appPreferences.chartStartFromZero
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     init {
         getSessionDetailUseCase(sessionId)
             .onEach { detail ->

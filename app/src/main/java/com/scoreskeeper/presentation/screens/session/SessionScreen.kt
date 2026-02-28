@@ -55,6 +55,7 @@ fun SessionScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val chartAreaFill by viewModel.chartAreaFill.collectAsStateWithLifecycle()
+    val chartStartFromZero by viewModel.chartStartFromZero.collectAsStateWithLifecycle()
     val detail = state.detail
     val isInProgress = detail?.session?.status == SessionStatus.IN_PROGRESS
 
@@ -139,7 +140,7 @@ fun SessionScreen(
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                     )
-                    ScoreChart(detail = detail, areaFill = chartAreaFill)
+                    ScoreChart(detail = detail, areaFill = chartAreaFill, startFromZero = chartStartFromZero)
                 }
             }
 
@@ -252,13 +253,13 @@ private fun WinnerBanner(winners: List<Player>) {
 }
 
 @Composable
-private fun ScoreChart(detail: SessionDetail, areaFill: Boolean = true) {
+private fun ScoreChart(detail: SessionDetail, areaFill: Boolean = true, startFromZero: Boolean = false) {
     val modelProducer = remember { CartesianChartModelProducer() }
     val maxRound = detail.rounds.maxOf { it.round }
     val playerColors = detail.players.map { Color(it.avatarColor) }
     var selectedPlayerIndex by remember { mutableIntStateOf(-1) }
 
-    LaunchedEffect(detail.rounds) {
+    LaunchedEffect(detail.rounds, startFromZero) {
         modelProducer.runTransaction {
             lineSeries {
                 detail.players.forEach { player ->
@@ -268,7 +269,8 @@ private fun ScoreChart(detail: SessionDetail, areaFill: Boolean = true) {
                             .sumOf { it.points }
                             .toFloat()
                     }
-                    series(cumulativeScores)
+                    val scores = if (startFromZero) listOf(0f) + cumulativeScores else cumulativeScores
+                    series(scores)
                 }
             }
         }
