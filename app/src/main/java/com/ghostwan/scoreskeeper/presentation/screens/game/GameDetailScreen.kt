@@ -27,6 +27,7 @@ import com.ghostwan.scoreskeeper.domain.model.Player
 import com.ghostwan.scoreskeeper.domain.model.PlayerStats
 import com.ghostwan.scoreskeeper.domain.model.Session
 import com.ghostwan.scoreskeeper.domain.model.SessionStatus
+import com.ghostwan.scoreskeeper.presentation.components.GameIcons
 import com.ghostwan.scoreskeeper.presentation.components.PlayerAvatar
 import com.ghostwan.scoreskeeper.presentation.screens.session.CreatePlayerViewModel
 import com.ghostwan.scoreskeeper.presentation.theme.PlayerColors
@@ -125,7 +126,7 @@ fun GameDetailScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Icon(
-                            Icons.Default.SportsEsports,
+                            GameIcons.getIcon(state.game?.icon ?: "SportsEsports"),
                             null,
                             modifier = Modifier.size(60.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),

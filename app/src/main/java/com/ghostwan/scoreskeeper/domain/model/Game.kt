@@ -9,6 +9,7 @@ data class Game(
     val id: Long = 0,
     val name: String,
     val description: String = "",
+    val icon: String = "SportsEsports",
     val minPlayers: Int = 2,
     val maxPlayers: Int = Int.MAX_VALUE,
     val lowestScoreWins: Boolean = false,

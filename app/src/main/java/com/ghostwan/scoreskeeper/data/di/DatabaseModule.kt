@@ -25,7 +25,9 @@ object DatabaseModule {
             context,
             ScoresKeeperDatabase::class.java,
             "scores_keeper.db"
-        ).build()
+        )
+            .addMigrations(ScoresKeeperDatabase.MIGRATION_1_2)
+            .build()
 
     @Provides
     fun provideGameDao(db: ScoresKeeperDatabase): GameDao = db.gameDao()

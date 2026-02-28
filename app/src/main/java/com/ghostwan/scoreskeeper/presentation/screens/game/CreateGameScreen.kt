@@ -16,7 +16,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import com.ghostwan.scoreskeeper.R
+import com.ghostwan.scoreskeeper.presentation.components.GameIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,6 +82,43 @@ fun CreateGameScreen(
                 maxLines = 3,
                 modifier = Modifier.fillMaxWidth(),
             )
+
+            // Game icon picker
+            Text(
+                stringResource(R.string.game_icon_label),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(5),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 200.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(GameIcons.entries) { (name, icon) ->
+                    val isSelected = state.icon == name
+                    FilledIconButton(
+                        onClick = { viewModel.onIconChange(name) },
+                        modifier = Modifier.size(48.dp),
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = if (isSelected) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            },
+                            contentColor = if (isSelected) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                        ),
+                    ) {
+                        Icon(icon, contentDescription = name, modifier = Modifier.size(24.dp))
+                    }
+                }
+            }
 
             // Min/Max players
             Row(

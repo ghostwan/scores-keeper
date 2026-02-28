@@ -22,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ghostwan.scoreskeeper.R
 import com.ghostwan.scoreskeeper.domain.model.Game
+import com.ghostwan.scoreskeeper.presentation.components.GameIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,7 +127,7 @@ private fun GameCard(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Icon(
-                imageVector = Icons.Default.SportsEsports,
+                imageVector = GameIcons.getIcon(game.icon),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(40.dp),

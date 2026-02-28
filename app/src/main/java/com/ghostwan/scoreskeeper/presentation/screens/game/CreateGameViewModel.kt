@@ -14,6 +14,7 @@ import javax.inject.Inject
 data class CreateGameUiState(
     val name: String = "",
     val description: String = "",
+    val icon: String = "SportsEsports",
     val minPlayers: Int = 2,
     val maxPlayers: Int = Int.MAX_VALUE,
     val lowestScoreWins: Boolean = false,
@@ -41,6 +42,7 @@ class CreateGameViewModel @Inject constructor(
     fun setMaxPlayersUnlimited() = _uiState.update {
         it.copy(maxPlayers = Int.MAX_VALUE)
     }
+    fun onIconChange(value: String) = _uiState.update { it.copy(icon = value) }
     fun onLowestScoreWinsChange(value: Boolean) = _uiState.update { it.copy(lowestScoreWins = value) }
 
     fun saveGame() {
@@ -52,6 +54,7 @@ class CreateGameViewModel @Inject constructor(
                 Game(
                     name = state.name.trim(),
                     description = state.description.trim(),
+                    icon = state.icon,
                     minPlayers = state.minPlayers,
                     maxPlayers = state.maxPlayers,
                     lowestScoreWins = state.lowestScoreWins,
