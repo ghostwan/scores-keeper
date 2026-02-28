@@ -242,8 +242,7 @@ private fun NewSessionBottomSheet(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp)
-                .navigationBarsPadding(),
+                .padding(bottom = 48.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

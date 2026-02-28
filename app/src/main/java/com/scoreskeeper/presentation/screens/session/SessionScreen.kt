@@ -362,8 +362,7 @@ private fun ScoreEntryBottomSheet(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
                 .imePadding()
-                .padding(bottom = 16.dp)
-                .navigationBarsPadding(),
+                .padding(bottom = 48.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(

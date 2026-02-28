@@ -12,6 +12,7 @@ import com.scoreskeeper.presentation.screens.game.CreateGameScreen
 import com.scoreskeeper.presentation.screens.game.GameDetailScreen
 import com.scoreskeeper.presentation.screens.home.HomeScreen
 import com.scoreskeeper.presentation.screens.session.SessionScreen
+import com.scoreskeeper.presentation.screens.settings.SettingsScreen
 
 @Composable
 fun ScoresKeeperNavGraph() {
@@ -28,6 +29,13 @@ fun ScoresKeeperNavGraph() {
                 onNavigateToGame = { gameId ->
                     navController.navigate(Screen.GameDetail.createRoute(gameId))
                 },
+                onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+            )
+        }
+
+        composable(Screen.Settings.route) {
+            SettingsScreen(
+                onNavigateBack = { navController.popBackStack() },
             )
         }
 
