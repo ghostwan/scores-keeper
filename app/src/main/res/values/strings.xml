@@ -1,3 +1,92 @@
 <resources>
     <string name="app_name">Scores Keeper</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="create">Create</string>
+    <string name="settings">Settings</string>
+    <string name="pts">pts</string>
+
+    <!-- Home -->
+    <string name="new_game">New game</string>
+    <string name="delete_game_title">Delete %1$s?</string>
+    <string name="delete_game_message">All associated sessions will also be deleted.</string>
+    <string name="players_range">%1$d–%2$d players</string>
+    <string name="lowest_score_wins_suffix"> · Lowest score wins</string>
+    <string name="no_games_created">No games created</string>
+    <string name="create_first_game">Create my first game</string>
+
+    <!-- Create Game -->
+    <string name="create_game_title">Create a game</string>
+    <string name="game_name_label">Game name *</string>
+    <string name="game_name_placeholder">e.g. Uno, Tarot, 7 Wonders…</string>
+    <string name="description_label">Description (optional)</string>
+    <string name="description_placeholder">Special rules, notes…</string>
+    <string name="min_players">Min players</string>
+    <string name="max_players">Max players</string>
+    <string name="lowest_score_wins">Lowest score wins</string>
+    <string name="lowest_score_wins_description">For card games where the goal is to have the fewest points</string>
+    <string name="save">Save</string>
+
+    <!-- Game Detail -->
+    <string name="game_fallback">Game</string>
+    <string name="new_session">New session</string>
+    <string name="general_ranking">Overall ranking</string>
+    <string name="sessions_header">Sessions</string>
+    <string name="no_sessions_played">No sessions played</string>
+    <string name="delete_session_title">Delete this session?</string>
+    <string name="delete_session_message">All scores for this session will be permanently deleted.</string>
+    <string name="stats_subtitle">%1$d sessions · %2$d wins</string>
+    <string name="win_rate">win rate</string>
+    <string name="session_players_count">%1$d players · </string>
+    <string name="status_in_progress">In progress</string>
+    <string name="status_finished">Finished</string>
+    <string name="choose_players">Choose players</string>
+    <string name="players_selection_subtitle">%1$d to %2$d players — %3$d selected</string>
+    <string name="add_player">Add a player</string>
+    <string name="no_players_created">No players created. Tap + to add one.</string>
+    <string name="start_session">Start session</string>
+    <string name="new_player">New player</string>
+    <string name="player_name_label">First name / Nickname</string>
+    <string name="color_label">Color:</string>
+
+    <!-- Session -->
+    <string name="session_fallback">Session</string>
+    <string name="finish">Finish</string>
+    <string name="add_round">Add a round</string>
+    <string name="scores_header">Scores</string>
+    <string name="score_evolution">Score progression</string>
+    <string name="rounds_history">Round history</string>
+    <string name="finish_session_title">Finish the session?</string>
+    <string name="finish_session_message">The current ranking will be saved permanently.</string>
+    <string name="delete_round_title">Delete round %1$d?</string>
+    <string name="delete_round_message">The scores for this round will be permanently deleted.</string>
+    <string name="victory">Victory!</string>
+    <string name="tie">Tie!</string>
+    <string name="round_number">Round %1$d</string>
+    <string name="edit">Edit</string>
+    <string name="edit_round_title">Edit round %1$d</string>
+    <string name="new_round_title">Round %1$d — Enter scores</string>
+    <string name="edit_round_button">Edit round</string>
+    <string name="validate_round_button">Validate round</string>
+
+    <!-- Settings -->
+    <string name="google_drive_backup">Google Drive Backup</string>
+    <string name="syncing">Syncing…</string>
+    <string name="last_sync">Last sync: %1$s</string>
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="auto_sync_info">Sync is automatic after each change.</string>
+    <string name="backup_button">Back up</string>
+    <string name="restore_button">Restore</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="connect_google_drive_info">Connect your Google account to automatically back up your data to Google Drive.</string>
+    <string name="about">About</string>
+    <string name="version">Version %1$s</string>
+    <string name="connect_google_drive">Connect Google Drive</string>
+    <string name="restore_data_title">Restore data?</string>
+    <string name="restore_data_message">Current data will be replaced by the Google Drive backup. The app will need to be restarted.</string>
+    <string name="backup_success">Backup sent to Google Drive</string>
+    <string name="restore_success">Data restored! Restart the app.</string>
 </resources>

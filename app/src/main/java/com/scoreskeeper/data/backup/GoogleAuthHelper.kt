@@ -1,12 +1,12 @@
 package com.scoreskeeper.data.backup
 
 import android.content.Context
-import androidx.credentials.ClearCredentialStateRequest
-import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialRequest
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import android.content.Intent
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.api.services.drive.DriveScopes
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,42 +15,30 @@ import javax.inject.Singleton
 class GoogleAuthHelper @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
-    private val credentialManager = CredentialManager.create(context)
-
-    suspend fun signIn(activityContext: Context): GoogleSignInResult {
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setAutoSelectEnabled(true)
+    private val googleSignInClient: GoogleSignInClient by lazy {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestScopes(com.google.android.gms.common.api.Scope(DriveScopes.DRIVE_APPDATA))
             .build()
-
-        val request = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
-            .build()
-
-        return try {
-            val result = credentialManager.getCredential(activityContext, request)
-            val credential = result.credential
-            if (credential is CustomCredential &&
-                credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-            ) {
-                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                GoogleSignInResult.Success(
-                    email = googleIdTokenCredential.id,
-                    displayName = googleIdTokenCredential.displayName ?: googleIdTokenCredential.id,
-                )
-            } else {
-                GoogleSignInResult.Error("Type de credential non supporté")
-            }
-        } catch (e: Exception) {
-            GoogleSignInResult.Error(e.message ?: "Erreur de connexion")
-        }
+        GoogleSignIn.getClient(context, gso)
     }
 
-    suspend fun signOut() {
-        try {
-            credentialManager.clearCredentialState(ClearCredentialStateRequest())
-        } catch (_: Exception) {
-        }
+    /**
+     * Returns the sign-in Intent to launch with startActivityForResult / ActivityResultLauncher.
+     */
+    fun getSignInIntent(): Intent = googleSignInClient.signInIntent
+
+    /**
+     * Returns the currently signed-in account, or null.
+     */
+    fun getSignedInAccount(): GoogleSignInAccount? =
+        GoogleSignIn.getLastSignedInAccount(context)
+
+    /**
+     * Signs out and revokes access.
+     */
+    fun signOut(onComplete: () -> Unit = {}) {
+        googleSignInClient.signOut().addOnCompleteListener { onComplete() }
     }
 }
 

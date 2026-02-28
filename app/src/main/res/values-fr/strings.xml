@@ -1,0 +1,90 @@
+<resources>
+    <!-- Common -->
+    <string name="back">Retour</string>
+    <string name="cancel">Annuler</string>
+    <string name="delete">Supprimer</string>
+    <string name="create">Créer</string>
+    <string name="settings">Paramètres</string>
+    <string name="pts">pts</string>
+
+    <!-- Home -->
+    <string name="new_game">Nouveau jeu</string>
+    <string name="delete_game_title">Supprimer %1$s ?</string>
+    <string name="delete_game_message">Toutes les parties associées seront également supprimées.</string>
+    <string name="players_range">%1$d–%2$d joueurs</string>
+    <string name="lowest_score_wins_suffix"> · Score le plus bas gagne</string>
+    <string name="no_games_created">Aucun jeu créé</string>
+    <string name="create_first_game">Créer mon premier jeu</string>
+
+    <!-- Create Game -->
+    <string name="create_game_title">Créer un jeu</string>
+    <string name="game_name_label">Nom du jeu *</string>
+    <string name="game_name_placeholder">ex. Uno, Tarot, 7 Wonders…</string>
+    <string name="description_label">Description (optionnel)</string>
+    <string name="description_placeholder">Règles spéciales, notes…</string>
+    <string name="min_players">Joueurs min</string>
+    <string name="max_players">Joueurs max</string>
+    <string name="lowest_score_wins">Score le plus bas gagne</string>
+    <string name="lowest_score_wins_description">Pour les jeux de cartes où le but est d\'avoir le moins de points</string>
+    <string name="save">Enregistrer</string>
+
+    <!-- Game Detail -->
+    <string name="game_fallback">Jeu</string>
+    <string name="new_session">Nouvelle partie</string>
+    <string name="general_ranking">Classement général</string>
+    <string name="sessions_header">Parties</string>
+    <string name="no_sessions_played">Aucune partie jouée</string>
+    <string name="delete_session_title">Supprimer cette partie ?</string>
+    <string name="delete_session_message">Tous les scores de cette partie seront supprimés définitivement.</string>
+    <string name="stats_subtitle">%1$d parties · %2$d victoires</string>
+    <string name="win_rate">win rate</string>
+    <string name="session_players_count">%1$d joueurs · </string>
+    <string name="status_in_progress">En cours</string>
+    <string name="status_finished">Terminée</string>
+    <string name="choose_players">Choisir les joueurs</string>
+    <string name="players_selection_subtitle">%1$d à %2$d joueurs — %3$d sélectionné(s)</string>
+    <string name="add_player">Ajouter un joueur</string>
+    <string name="no_players_created">Aucun joueur créé. Appuyez sur + pour en ajouter.</string>
+    <string name="start_session">Démarrer la partie</string>
+    <string name="new_player">Nouveau joueur</string>
+    <string name="player_name_label">Prénom / Pseudo</string>
+    <string name="color_label">Couleur :</string>
+
+    <!-- Session -->
+    <string name="session_fallback">Partie</string>
+    <string name="finish">Terminer</string>
+    <string name="add_round">Ajouter un tour</string>
+    <string name="scores_header">Scores</string>
+    <string name="score_evolution">Évolution des scores</string>
+    <string name="rounds_history">Historique des tours</string>
+    <string name="finish_session_title">Terminer la partie ?</string>
+    <string name="finish_session_message">Le classement actuel sera enregistré définitivement.</string>
+    <string name="delete_round_title">Supprimer le tour %1$d ?</string>
+    <string name="delete_round_message">Les scores de ce tour seront supprimés définitivement.</string>
+    <string name="victory">Victoire !</string>
+    <string name="tie">Égalité !</string>
+    <string name="round_number">Tour %1$d</string>
+    <string name="edit">Modifier</string>
+    <string name="edit_round_title">Modifier le tour %1$d</string>
+    <string name="new_round_title">Tour %1$d — Saisir les scores</string>
+    <string name="edit_round_button">Modifier le tour</string>
+    <string name="validate_round_button">Valider le tour</string>
+
+    <!-- Settings -->
+    <string name="google_drive_backup">Sauvegarde Google Drive</string>
+    <string name="syncing">Synchronisation en cours…</string>
+    <string name="last_sync">Dernière sync : %1$s</string>
+    <string name="error_prefix">Erreur : %1$s</string>
+    <string name="auto_sync_info">La synchronisation est automatique après chaque modification.</string>
+    <string name="backup_button">Sauvegarder</string>
+    <string name="restore_button">Restaurer</string>
+    <string name="disconnect">Déconnecter</string>
+    <string name="connect_google_drive_info">Connectez votre compte Google pour sauvegarder automatiquement vos données sur Google Drive.</string>
+    <string name="about">À propos</string>
+    <string name="version">Version %1$s</string>
+    <string name="connect_google_drive">Connecter Google Drive</string>
+    <string name="restore_data_title">Restaurer les données ?</string>
+    <string name="restore_data_message">Les données actuelles seront remplacées par la sauvegarde de Google Drive. L\'application devra être redémarrée.</string>
+    <string name="backup_success">Sauvegarde envoyée sur Google Drive</string>
+    <string name="restore_success">Données restaurées ! Redémarrez l\'application.</string>
+</resources>

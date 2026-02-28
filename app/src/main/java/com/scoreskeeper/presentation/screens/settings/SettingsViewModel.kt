@@ -1,8 +1,13 @@
 package com.scoreskeeper.presentation.screens.settings
 
+import android.app.Application
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.scoreskeeper.R
 import com.scoreskeeper.data.backup.BackupResult
+import com.scoreskeeper.data.backup.GoogleAuthHelper
 import com.scoreskeeper.data.backup.SyncManager
 import com.scoreskeeper.data.backup.SyncState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val syncManager: SyncManager,
+    private val googleAuthHelper: GoogleAuthHelper,
+    private val application: Application,
 ) : ViewModel() {
 
     val syncState: StateFlow<SyncState> = syncManager.syncState
@@ -24,6 +31,10 @@ class SettingsViewModel @Inject constructor(
 
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message.asStateFlow()
+
+    fun launchSignIn(launcher: androidx.activity.result.ActivityResultLauncher<android.content.Intent>) {
+        launcher.launch(googleAuthHelper.getSignInIntent())
+    }
 
     fun onSignedIn(email: String, displayName: String) {
         viewModelScope.launch {
@@ -33,7 +44,11 @@ class SettingsViewModel @Inject constructor(
 
     fun disconnect() {
         viewModelScope.launch {
-            syncManager.disableSync()
+            googleAuthHelper.signOut {
+                viewModelScope.launch {
+                    syncManager.disableSync()
+                }
+            }
         }
     }
 
@@ -41,8 +56,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val result = syncManager.manualBackup()
             _message.value = when (result) {
-                is BackupResult.Success -> "Sauvegarde envoyée sur Google Drive"
-                is BackupResult.Error -> "Erreur : ${result.message}"
+                is BackupResult.Success -> application.getString(R.string.backup_success)
+                is BackupResult.Error -> application.getString(R.string.error_prefix, result.message)
             }
         }
     }
@@ -51,8 +66,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val result = syncManager.restoreFromBackup()
             _message.value = when (result) {
-                is BackupResult.Success -> "Données restaurées ! Redémarrez l'application."
-                is BackupResult.Error -> "Erreur : ${result.message}"
+                is BackupResult.Success -> application.getString(R.string.restore_success)
+                is BackupResult.Error -> application.getString(R.string.error_prefix, result.message)
             }
         }
     }

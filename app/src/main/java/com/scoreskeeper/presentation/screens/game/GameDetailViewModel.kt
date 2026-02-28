@@ -10,6 +10,7 @@ import com.scoreskeeper.domain.model.Session
 import com.scoreskeeper.domain.repository.GameRepository
 import com.scoreskeeper.domain.usecase.player.GetAllPlayersUseCase
 import com.scoreskeeper.domain.usecase.session.CreateSessionUseCase
+import com.scoreskeeper.domain.usecase.session.DeleteSessionUseCase
 import com.scoreskeeper.domain.usecase.session.GetPlayerStatsUseCase
 import com.scoreskeeper.domain.usecase.session.GetSessionsByGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +27,7 @@ data class GameDetailUiState(
     val isLoading: Boolean = true,
     val newSessionId: Long? = null,
     val showNewSessionSheet: Boolean = false,
+    val sessionToDelete: Session? = null,
 )
 
 @HiltViewModel
@@ -36,6 +38,7 @@ class GameDetailViewModel @Inject constructor(
     getSessionsByGameUseCase: GetSessionsByGameUseCase,
     getPlayerStatsUseCase: GetPlayerStatsUseCase,
     private val createSessionUseCase: CreateSessionUseCase,
+    private val deleteSessionUseCase: DeleteSessionUseCase,
 ) : ViewModel() {
 
     private val gameId: Long = checkNotNull(savedStateHandle["gameId"])
@@ -92,4 +95,18 @@ class GameDetailViewModel @Inject constructor(
     }
 
     fun onSessionNavigated() = _uiState.update { it.copy(newSessionId = null) }
+
+    fun showDeleteSessionDialog(session: Session) =
+        _uiState.update { it.copy(sessionToDelete = session) }
+
+    fun hideDeleteSessionDialog() =
+        _uiState.update { it.copy(sessionToDelete = null) }
+
+    fun confirmDeleteSession() {
+        val session = _uiState.value.sessionToDelete ?: return
+        viewModelScope.launch {
+            deleteSessionUseCase(session)
+            _uiState.update { it.copy(sessionToDelete = null) }
+        }
+    }
 }

@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +36,7 @@ import com.patrykandpatrick.vico.compose.common.fill
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
+import com.scoreskeeper.R
 import com.scoreskeeper.domain.model.Player
 import com.scoreskeeper.domain.model.SessionDetail
 import com.scoreskeeper.domain.model.SessionStatus
@@ -54,16 +56,16 @@ fun SessionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(detail?.session?.gameName ?: "Partie") },
+                title = { Text(detail?.session?.gameName ?: stringResource(R.string.session_fallback)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back))
                     }
                 },
                 actions = {
                     if (isInProgress) {
                         TextButton(onClick = viewModel::showFinishDialog) {
-                            Text("Terminer")
+                            Text(stringResource(R.string.finish))
                         }
                     }
                 },
@@ -72,7 +74,7 @@ fun SessionScreen(
         floatingActionButton = {
             if (isInProgress) {
                 FloatingActionButton(onClick = viewModel::showScoreEntry) {
-                    Icon(Icons.Default.Add, "Ajouter un tour")
+                    Icon(Icons.Default.Add, stringResource(R.string.add_round))
                 }
             }
         },
@@ -100,7 +102,7 @@ fun SessionScreen(
             // Scoreboard
             item {
                 Text(
-                    "Scores",
+                    stringResource(R.string.scores_header),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold,
@@ -126,7 +128,7 @@ fun SessionScreen(
                 item {
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Évolution des scores",
+                        stringResource(R.string.score_evolution),
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.SemiBold,
@@ -140,7 +142,7 @@ fun SessionScreen(
             if (detail.rounds.isNotEmpty()) {
                 item {
                     Text(
-                        "Historique des tours",
+                        stringResource(R.string.rounds_history),
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.SemiBold,
@@ -180,13 +182,13 @@ fun SessionScreen(
     if (state.showFinishDialog) {
         AlertDialog(
             onDismissRequest = viewModel::hideFinishDialog,
-            title = { Text("Terminer la partie ?") },
-            text = { Text("Le classement actuel sera enregistré définitivement.") },
+            title = { Text(stringResource(R.string.finish_session_title)) },
+            text = { Text(stringResource(R.string.finish_session_message)) },
             confirmButton = {
-                Button(onClick = viewModel::finishSession) { Text("Terminer") }
+                Button(onClick = viewModel::finishSession) { Text(stringResource(R.string.finish)) }
             },
             dismissButton = {
-                TextButton(onClick = viewModel::hideFinishDialog) { Text("Annuler") }
+                TextButton(onClick = viewModel::hideFinishDialog) { Text(stringResource(R.string.cancel)) }
             },
         )
     }
@@ -195,18 +197,18 @@ fun SessionScreen(
     if (state.roundToDelete != null) {
         AlertDialog(
             onDismissRequest = viewModel::hideDeleteRoundDialog,
-            title = { Text("Supprimer le tour ${state.roundToDelete} ?") },
-            text = { Text("Les scores de ce tour seront supprimés définitivement.") },
+            title = { Text(stringResource(R.string.delete_round_title, state.roundToDelete!!)) },
+            text = { Text(stringResource(R.string.delete_round_message)) },
             confirmButton = {
                 Button(
                     onClick = viewModel::confirmDeleteRound,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
                     ),
-                ) { Text("Supprimer") }
+                ) { Text(stringResource(R.string.delete)) }
             },
             dismissButton = {
-                TextButton(onClick = viewModel::hideDeleteRoundDialog) { Text("Annuler") }
+                TextButton(onClick = viewModel::hideDeleteRoundDialog) { Text(stringResource(R.string.cancel)) }
             },
         )
     }
@@ -231,7 +233,7 @@ private fun WinnerBanner(winners: List<Player>) {
             )
             Column {
                 Text(
-                    if (winners.size == 1) "Victoire !" else "Egalité !",
+                    if (winners.size == 1) stringResource(R.string.victory) else stringResource(R.string.tie),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -289,7 +291,6 @@ private fun ScoreChart(detail: SessionDetail) {
                     .fillMaxWidth()
                     .height(200.dp),
             )
-            // Légende
             Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier
@@ -354,7 +355,7 @@ private fun RoundHistoryRow(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    "Tour $round",
+                    stringResource(R.string.round_number, round),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.SemiBold,
@@ -363,7 +364,7 @@ private fun RoundHistoryRow(
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         Icon(
                             Icons.Default.Edit,
-                            contentDescription = "Modifier",
+                            contentDescription = stringResource(R.string.edit),
                             modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         )
@@ -414,9 +415,9 @@ private fun ScoreEntryBottomSheet(
 ) {
     val allFilled = players.all { inputs[it.id]?.toIntOrNull() != null }
     val title = if (isEditing) {
-        "Modifier le tour $roundNumber"
+        stringResource(R.string.edit_round_title, roundNumber)
     } else {
-        "Tour $roundNumber — Saisir les scores"
+        stringResource(R.string.new_round_title, roundNumber)
     }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -457,7 +458,7 @@ private fun ScoreEntryBottomSheet(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.width(100.dp),
-                        placeholder = { Text("pts", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        placeholder = { Text(stringResource(R.string.pts), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         isError = inputs[player.id]?.let {
                             it.isNotEmpty() && it != "-" && it.toIntOrNull() == null
                         } == true,
@@ -471,7 +472,7 @@ private fun ScoreEntryBottomSheet(
                 enabled = allFilled,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(if (isEditing) "Modifier le tour" else "Valider le tour")
+                Text(if (isEditing) stringResource(R.string.edit_round_button) else stringResource(R.string.validate_round_button))
             }
         }
     }

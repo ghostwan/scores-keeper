@@ -1,6 +1,6 @@
 package com.scoreskeeper.presentation.screens.settings
 
-import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -13,17 +13,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialRequest
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import kotlinx.coroutines.launch
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
+import com.scoreskeeper.R
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,10 +32,23 @@ fun SettingsScreen(
 ) {
     val syncState by viewModel.syncState.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var showRestoreDialog by remember { mutableStateOf(false) }
+
+    // Google Sign-In launcher
+    val signInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        try {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            val account = task.getResult(ApiException::class.java)
+            val email = account.email ?: return@rememberLauncherForActivityResult
+            val name = account.displayName ?: email
+            viewModel.onSignedIn(email, name)
+        } catch (e: ApiException) {
+            Log.e("GoogleSignIn", "Sign-in failed: ${e.statusCode}", e)
+        }
+    }
 
     LaunchedEffect(message) {
         message?.let {
@@ -50,10 +60,10 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Paramètres") },
+                title = { Text(stringResource(R.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back))
                     }
                 },
             )
@@ -70,7 +80,7 @@ fun SettingsScreen(
         ) {
             // Google Drive section
             Text(
-                "Sauvegarde Google Drive",
+                stringResource(R.string.google_drive_backup),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -117,7 +127,7 @@ fun SettingsScreen(
                             if (syncState.isSyncing) {
                                 CircularProgressIndicator(modifier = Modifier.size(16.dp))
                                 Text(
-                                    "Synchronisation en cours...",
+                                    stringResource(R.string.syncing),
                                     style = MaterialTheme.typography.bodySmall,
                                 )
                             } else if (syncState.lastSyncTime > 0) {
@@ -127,9 +137,9 @@ fun SettingsScreen(
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(16.dp),
                                 )
-                                val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.FRANCE)
+                                val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                                 Text(
-                                    "Dernière sync : ${dateFormat.format(Date(syncState.lastSyncTime))}",
+                                    stringResource(R.string.last_sync, dateFormat.format(Date(syncState.lastSyncTime))),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
@@ -138,14 +148,14 @@ fun SettingsScreen(
 
                         if (syncState.lastError != null) {
                             Text(
-                                "Erreur : ${syncState.lastError}",
+                                stringResource(R.string.error_prefix, syncState.lastError!!),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.error,
                             )
                         }
 
                         Text(
-                            "La synchronisation est automatique après chaque modification.",
+                            stringResource(R.string.auto_sync_info),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -164,7 +174,7 @@ fun SettingsScreen(
                             ) {
                                 Icon(Icons.Default.CloudUpload, null, modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(4.dp))
-                                Text("Sauvegarder")
+                                Text(stringResource(R.string.backup_button))
                             }
                             OutlinedButton(
                                 onClick = { showRestoreDialog = true },
@@ -173,7 +183,7 @@ fun SettingsScreen(
                             ) {
                                 Icon(Icons.Default.CloudDownload, null, modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(4.dp))
-                                Text("Restaurer")
+                                Text(stringResource(R.string.restore_button))
                             }
                         }
 
@@ -185,27 +195,30 @@ fun SettingsScreen(
                         ) {
                             Icon(Icons.Default.Logout, null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("Déconnecter")
+                            Text(stringResource(R.string.disconnect))
                         }
                     } else {
                         // Not connected state
                         Text(
-                            "Connectez votre compte Google pour sauvegarder automatiquement vos données sur Google Drive.",
+                            stringResource(R.string.connect_google_drive_info),
                             style = MaterialTheme.typography.bodyMedium,
                         )
 
-                        GoogleSignInButton(
-                            onSignedIn = { email, name ->
-                                viewModel.onSignedIn(email, name)
-                            },
-                        )
+                        Button(
+                            onClick = { viewModel.launchSignIn(signInLauncher) },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Icon(Icons.Default.CloudSync, null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.connect_google_drive))
+                        }
                     }
                 }
             }
 
             // App info
             Text(
-                "À propos",
+                stringResource(R.string.about),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -216,8 +229,8 @@ fun SettingsScreen(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    Text("Scores Keeper", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-                    Text("Version 1.0.0", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.app_name), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                    Text(stringResource(R.string.version, "1.0.0"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -227,67 +240,19 @@ fun SettingsScreen(
     if (showRestoreDialog) {
         AlertDialog(
             onDismissRequest = { showRestoreDialog = false },
-            title = { Text("Restaurer les données ?") },
+            title = { Text(stringResource(R.string.restore_data_title)) },
             text = {
-                Text("Les données actuelles seront remplacées par la sauvegarde de Google Drive. L'application devra être redémarrée.")
+                Text(stringResource(R.string.restore_data_message))
             },
             confirmButton = {
                 TextButton(onClick = {
                     showRestoreDialog = false
                     viewModel.restoreBackup()
-                }) { Text("Restaurer") }
+                }) { Text(stringResource(R.string.restore_button)) }
             },
             dismissButton = {
-                TextButton(onClick = { showRestoreDialog = false }) { Text("Annuler") }
+                TextButton(onClick = { showRestoreDialog = false }) { Text(stringResource(R.string.cancel)) }
             },
         )
-    }
-}
-
-@Composable
-private fun GoogleSignInButton(
-    onSignedIn: (email: String, displayName: String) -> Unit,
-) {
-    val context = LocalContext.current
-    val activity = context as Activity
-    val scope = rememberCoroutineScope()
-
-    Button(
-        onClick = {
-            scope.launch {
-                try {
-                    val credentialManager = CredentialManager.create(context)
-
-                    val googleIdOption = GetGoogleIdOption.Builder()
-                        .setFilterByAuthorizedAccounts(false)
-                        .setAutoSelectEnabled(false)
-                        .build()
-
-                    val request = GetCredentialRequest.Builder()
-                        .addCredentialOption(googleIdOption)
-                        .build()
-
-                    val result = credentialManager.getCredential(activity, request)
-                    val credential = result.credential
-
-                    if (credential is CustomCredential &&
-                        credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-                    ) {
-                        val googleCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                        onSignedIn(
-                            googleCredential.id,
-                            googleCredential.displayName ?: googleCredential.id,
-                        )
-                    }
-                } catch (e: Exception) {
-                    android.util.Log.e("GoogleSignIn", "Sign-in failed", e)
-                }
-            }
-        },
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Icon(Icons.Default.CloudSync, null, modifier = Modifier.size(18.dp))
-        Spacer(Modifier.width(8.dp))
-        Text("Connecter Google Drive")
     }
 }

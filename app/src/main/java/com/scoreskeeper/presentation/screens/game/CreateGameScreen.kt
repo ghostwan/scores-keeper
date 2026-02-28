@@ -11,10 +11,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.scoreskeeper.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,10 +33,10 @@ fun CreateGameScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Créer un jeu") },
+                title = { Text(stringResource(R.string.create_game_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
             )
@@ -46,7 +48,7 @@ fun CreateGameScreen(
                     MaterialTheme.colorScheme.surfaceVariant
                 else MaterialTheme.colorScheme.primary,
             ) {
-                Icon(Icons.Default.Check, contentDescription = "Enregistrer")
+                Icon(Icons.Default.Check, contentDescription = stringResource(R.string.save))
             }
         },
     ) { padding ->
@@ -61,8 +63,8 @@ fun CreateGameScreen(
             OutlinedTextField(
                 value = state.name,
                 onValueChange = viewModel::onNameChange,
-                label = { Text("Nom du jeu *") },
-                placeholder = { Text("ex. Uno, Tarot, 7 Wonders...") },
+                label = { Text(stringResource(R.string.game_name_label)) },
+                placeholder = { Text(stringResource(R.string.game_name_placeholder)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.name.isBlank(),
@@ -71,8 +73,8 @@ fun CreateGameScreen(
             OutlinedTextField(
                 value = state.description,
                 onValueChange = viewModel::onDescriptionChange,
-                label = { Text("Description (optionnel)") },
-                placeholder = { Text("Règles spéciales, notes...") },
+                label = { Text(stringResource(R.string.description_label)) },
+                placeholder = { Text(stringResource(R.string.description_placeholder)) },
                 maxLines = 3,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -84,7 +86,7 @@ fun CreateGameScreen(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Joueurs min",
+                        stringResource(R.string.min_players),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -98,7 +100,7 @@ fun CreateGameScreen(
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Joueurs max",
+                        stringResource(R.string.max_players),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -127,11 +129,11 @@ fun CreateGameScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            "Score le plus bas gagne",
+                            stringResource(R.string.lowest_score_wins),
                             style = MaterialTheme.typography.bodyLarge,
                         )
                         Text(
-                            "Pour les jeux de cartes ou le but est d'avoir le moins de points",
+                            stringResource(R.string.lowest_score_wins_description),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

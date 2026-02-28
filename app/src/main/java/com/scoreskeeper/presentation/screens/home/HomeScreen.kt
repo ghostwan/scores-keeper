@@ -15,10 +15,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.scoreskeeper.R
 import com.scoreskeeper.domain.model.Game
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,14 +37,14 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Scores Keeper") },
+                title = { Text(stringResource(R.string.app_name)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ),
                 actions = {
                     IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Paramètres")
+                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings))
                     }
                 },
             )
@@ -51,7 +53,7 @@ fun HomeScreen(
             ExtendedFloatingActionButton(
                 onClick = onNavigateToCreateGame,
                 icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                text = { Text("Nouveau jeu") },
+                text = { Text(stringResource(R.string.new_game)) },
             )
         },
     ) { padding ->
@@ -85,18 +87,18 @@ fun HomeScreen(
     gameToDelete?.let { game ->
         AlertDialog(
             onDismissRequest = { gameToDelete = null },
-            title = { Text("Supprimer ${game.name} ?") },
-            text = { Text("Toutes les parties associées seront également supprimées.") },
+            title = { Text(stringResource(R.string.delete_game_title, game.name)) },
+            text = { Text(stringResource(R.string.delete_game_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         viewModel.deleteGame(game)
                         gameToDelete = null
                     }
-                ) { Text("Supprimer", color = MaterialTheme.colorScheme.error) }
+                ) { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) }
             },
             dismissButton = {
-                TextButton(onClick = { gameToDelete = null }) { Text("Annuler") }
+                TextButton(onClick = { gameToDelete = null }) { Text(stringResource(R.string.cancel)) }
             },
         )
     }
@@ -146,8 +148,8 @@ private fun GameCard(
                     )
                 }
                 Text(
-                    text = "${game.minPlayers}-${game.maxPlayers} joueurs" +
-                            if (game.lowestScoreWins) " · Score le plus bas gagne" else "",
+                    text = stringResource(R.string.players_range, game.minPlayers, game.maxPlayers) +
+                            if (game.lowestScoreWins) stringResource(R.string.lowest_score_wins_suffix) else "",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -174,7 +176,7 @@ private fun EmptyGamesPlaceholder(
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            "Aucun jeu créé",
+            stringResource(R.string.no_games_created),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -182,7 +184,7 @@ private fun EmptyGamesPlaceholder(
         FilledTonalButton(onClick = onCreateGame) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(Modifier.width(8.dp))
-            Text("Créer mon premier jeu")
+            Text(stringResource(R.string.create_first_game))
         }
     }
 }

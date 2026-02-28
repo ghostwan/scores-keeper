@@ -1,5 +1,7 @@
 package com.scoreskeeper.presentation.screens.game
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,11 +16,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.scoreskeeper.R
 import com.scoreskeeper.domain.model.Player
 import com.scoreskeeper.domain.model.PlayerStats
 import com.scoreskeeper.domain.model.Session
@@ -47,10 +51,10 @@ fun GameDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(state.game?.name ?: "Jeu") },
+                title = { Text(state.game?.name ?: stringResource(R.string.game_fallback)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back))
                     }
                 },
             )
@@ -59,7 +63,7 @@ fun GameDetailScreen(
             ExtendedFloatingActionButton(
                 onClick = viewModel::showNewSessionSheet,
                 icon = { Icon(Icons.Default.PlayArrow, null) },
-                text = { Text("Nouvelle partie") },
+                text = { Text(stringResource(R.string.new_session)) },
             )
         },
     ) { padding ->
@@ -72,7 +76,7 @@ fun GameDetailScreen(
             // Stats section
             if (state.stats.isNotEmpty()) {
                 item {
-                    SectionHeader("Classement général")
+                    SectionHeader(stringResource(R.string.general_ranking))
                 }
                 items(state.stats) { stats ->
                     StatsCard(stats = stats)
@@ -81,11 +85,12 @@ fun GameDetailScreen(
 
             // Sessions section
             if (state.sessions.isNotEmpty()) {
-                item { SectionHeader("Parties") }
+                item { SectionHeader(stringResource(R.string.sessions_header)) }
                 items(state.sessions, key = { it.id }) { session ->
                     SessionCard(
                         session = session,
                         onClick = { onNavigateToSession(session.id) },
+                        onLongClick = { viewModel.showDeleteSessionDialog(session) },
                     )
                 }
             }
@@ -106,7 +111,7 @@ fun GameDetailScreen(
                         )
                         Spacer(Modifier.height(12.dp))
                         Text(
-                            "Aucune partie jouée",
+                            stringResource(R.string.no_sessions_played),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -114,6 +119,26 @@ fun GameDetailScreen(
                 }
             }
         }
+    }
+
+    // Delete session confirmation dialog
+    if (state.sessionToDelete != null) {
+        AlertDialog(
+            onDismissRequest = viewModel::hideDeleteSessionDialog,
+            title = { Text(stringResource(R.string.delete_session_title)) },
+            text = { Text(stringResource(R.string.delete_session_message)) },
+            confirmButton = {
+                Button(
+                    onClick = viewModel::confirmDeleteSession,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                    ),
+                ) { Text(stringResource(R.string.delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::hideDeleteSessionDialog) { Text(stringResource(R.string.cancel)) }
+            },
+        )
     }
 
     // New session bottom sheet
@@ -159,7 +184,7 @@ private fun StatsCard(stats: PlayerStats, modifier: Modifier = Modifier) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(stats.player.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
                 Text(
-                    "${stats.gamesPlayed} parties · ${stats.gamesWon} victoires",
+                    stringResource(R.string.stats_subtitle, stats.gamesPlayed, stats.gamesWon),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -172,7 +197,7 @@ private fun StatsCard(stats: PlayerStats, modifier: Modifier = Modifier) {
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    "win rate",
+                    stringResource(R.string.win_rate),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -181,14 +206,18 @@ private fun StatsCard(stats: PlayerStats, modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun SessionCard(session: Session, onClick: () -> Unit) {
+private fun SessionCard(session: Session, onClick: () -> Unit, onLongClick: () -> Unit = {}) {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
     Card(
-        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+            ),
     ) {
         Row(
             modifier = Modifier
@@ -211,8 +240,9 @@ private fun SessionCard(session: Session, onClick: () -> Unit) {
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    "${session.playerIds.size} joueurs · " +
-                            if (session.status == SessionStatus.IN_PROGRESS) "En cours" else "Terminée",
+                    stringResource(R.string.session_players_count, session.playerIds.size) +
+                            if (session.status == SessionStatus.IN_PROGRESS) stringResource(R.string.status_in_progress)
+                            else stringResource(R.string.status_finished),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -253,25 +283,25 @@ private fun NewSessionBottomSheet(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Choisir les joueurs",
+                        stringResource(R.string.choose_players),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        "$minPlayers à $maxPlayers joueurs — ${selectedPlayers.size} sélectionné(s)",
+                        stringResource(R.string.players_selection_subtitle, minPlayers, maxPlayers, selectedPlayers.size),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 FilledTonalIconButton(onClick = { showAddPlayerDialog = true }) {
-                    Icon(Icons.Default.PersonAdd, "Ajouter un joueur")
+                    Icon(Icons.Default.PersonAdd, stringResource(R.string.add_player))
                 }
             }
             Spacer(Modifier.height(16.dp))
 
             if (allPlayers.isEmpty()) {
                 Text(
-                    "Aucun joueur créé. Appuyez sur + pour en ajouter.",
+                    stringResource(R.string.no_players_created),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -299,7 +329,7 @@ private fun NewSessionBottomSheet(
                 enabled = selectedPlayers.size >= minPlayers,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Démarrer la partie")
+                Text(stringResource(R.string.start_session))
             }
         }
     }
@@ -326,16 +356,16 @@ private fun AddPlayerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Nouveau joueur") },
+        title = { Text(stringResource(R.string.new_player)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Prénom / Pseudo") },
+                    label = { Text(stringResource(R.string.player_name_label)) },
                     singleLine = true,
                 )
-                Text("Couleur :", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.color_label), style = MaterialTheme.typography.labelMedium)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -367,10 +397,10 @@ private fun AddPlayerDialog(
             Button(
                 onClick = { onConfirm(name, selectedColorIdx) },
                 enabled = name.isNotBlank(),
-            ) { Text("Créer") }
+            ) { Text(stringResource(R.string.create)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Annuler") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         },
     )
 }

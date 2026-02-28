@@ -96,10 +96,8 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
-    // Google Sign-In (Credential Manager)
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play)
-    implementation(libs.google.id)
+    // Google Sign-In
+    implementation(libs.google.play.services.auth)
 
     // Google Drive API
     implementation(libs.google.api.client.android) {

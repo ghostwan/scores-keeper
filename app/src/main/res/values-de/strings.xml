@@ -1,0 +1,90 @@
+<resources>
+    <!-- Common -->
+    <string name="back">Zurück</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="delete">Löschen</string>
+    <string name="create">Erstellen</string>
+    <string name="settings">Einstellungen</string>
+    <string name="pts">Pkt</string>
+
+    <!-- Home -->
+    <string name="new_game">Neues Spiel</string>
+    <string name="delete_game_title">%1$s löschen?</string>
+    <string name="delete_game_message">Alle zugehörigen Sitzungen werden ebenfalls gelöscht.</string>
+    <string name="players_range">%1$d–%2$d Spieler</string>
+    <string name="lowest_score_wins_suffix"> · Niedrigste Punktzahl gewinnt</string>
+    <string name="no_games_created">Keine Spiele erstellt</string>
+    <string name="create_first_game">Mein erstes Spiel erstellen</string>
+
+    <!-- Create Game -->
+    <string name="create_game_title">Spiel erstellen</string>
+    <string name="game_name_label">Spielname *</string>
+    <string name="game_name_placeholder">z.B. Uno, Tarot, 7 Wonders…</string>
+    <string name="description_label">Beschreibung (optional)</string>
+    <string name="description_placeholder">Sonderregeln, Notizen…</string>
+    <string name="min_players">Min. Spieler</string>
+    <string name="max_players">Max. Spieler</string>
+    <string name="lowest_score_wins">Niedrigste Punktzahl gewinnt</string>
+    <string name="lowest_score_wins_description">Für Kartenspiele, bei denen das Ziel ist, die wenigsten Punkte zu haben</string>
+    <string name="save">Speichern</string>
+
+    <!-- Game Detail -->
+    <string name="game_fallback">Spiel</string>
+    <string name="new_session">Neue Sitzung</string>
+    <string name="general_ranking">Gesamtrangliste</string>
+    <string name="sessions_header">Sitzungen</string>
+    <string name="no_sessions_played">Keine Sitzungen gespielt</string>
+    <string name="delete_session_title">Diese Sitzung löschen?</string>
+    <string name="delete_session_message">Alle Punktzahlen dieser Sitzung werden dauerhaft gelöscht.</string>
+    <string name="stats_subtitle">%1$d Sitzungen · %2$d Siege</string>
+    <string name="win_rate">Siegquote</string>
+    <string name="session_players_count">%1$d Spieler · </string>
+    <string name="status_in_progress">Läuft</string>
+    <string name="status_finished">Beendet</string>
+    <string name="choose_players">Spieler auswählen</string>
+    <string name="players_selection_subtitle">%1$d bis %2$d Spieler — %3$d ausgewählt</string>
+    <string name="add_player">Spieler hinzufügen</string>
+    <string name="no_players_created">Keine Spieler erstellt. Tippen Sie auf +, um einen hinzuzufügen.</string>
+    <string name="start_session">Sitzung starten</string>
+    <string name="new_player">Neuer Spieler</string>
+    <string name="player_name_label">Vorname / Spitzname</string>
+    <string name="color_label">Farbe:</string>
+
+    <!-- Session -->
+    <string name="session_fallback">Sitzung</string>
+    <string name="finish">Beenden</string>
+    <string name="add_round">Runde hinzufügen</string>
+    <string name="scores_header">Punktzahlen</string>
+    <string name="score_evolution">Punkteverlauf</string>
+    <string name="rounds_history">Rundenverlauf</string>
+    <string name="finish_session_title">Sitzung beenden?</string>
+    <string name="finish_session_message">Die aktuelle Rangliste wird dauerhaft gespeichert.</string>
+    <string name="delete_round_title">Runde %1$d löschen?</string>
+    <string name="delete_round_message">Die Punktzahlen dieser Runde werden dauerhaft gelöscht.</string>
+    <string name="victory">Sieg!</string>
+    <string name="tie">Unentschieden!</string>
+    <string name="round_number">Runde %1$d</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="edit_round_title">Runde %1$d bearbeiten</string>
+    <string name="new_round_title">Runde %1$d — Punktzahlen eingeben</string>
+    <string name="edit_round_button">Runde bearbeiten</string>
+    <string name="validate_round_button">Runde bestätigen</string>
+
+    <!-- Settings -->
+    <string name="google_drive_backup">Google Drive Sicherung</string>
+    <string name="syncing">Synchronisierung…</string>
+    <string name="last_sync">Letzte Sync: %1$s</string>
+    <string name="error_prefix">Fehler: %1$s</string>
+    <string name="auto_sync_info">Die Synchronisierung erfolgt automatisch nach jeder Änderung.</string>
+    <string name="backup_button">Sichern</string>
+    <string name="restore_button">Wiederherstellen</string>
+    <string name="disconnect">Trennen</string>
+    <string name="connect_google_drive_info">Verbinden Sie Ihr Google-Konto, um Ihre Daten automatisch auf Google Drive zu sichern.</string>
+    <string name="about">Über</string>
+    <string name="version">Version %1$s</string>
+    <string name="connect_google_drive">Google Drive verbinden</string>
+    <string name="restore_data_title">Daten wiederherstellen?</string>
+    <string name="restore_data_message">Die aktuellen Daten werden durch das Google Drive-Backup ersetzt. Die App muss neu gestartet werden.</string>
+    <string name="backup_success">Sicherung an Google Drive gesendet</string>
+    <string name="restore_success">Daten wiederhergestellt! Starten Sie die App neu.</string>
+</resources>
