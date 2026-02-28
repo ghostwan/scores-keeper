@@ -255,6 +255,7 @@ private fun ScoreChart(detail: SessionDetail) {
     val modelProducer = remember { CartesianChartModelProducer() }
     val maxRound = detail.rounds.maxOf { it.round }
     val playerColors = detail.players.map { Color(it.avatarColor) }
+    var selectedPlayerIndex by remember { mutableIntStateOf(-1) }
 
     LaunchedEffect(detail.rounds) {
         modelProducer.runTransaction {
@@ -272,8 +273,19 @@ private fun ScoreChart(detail: SessionDetail) {
         }
     }
 
-    val lineSpecs = playerColors.map { color ->
-        rememberLine(fill = LineCartesianLayer.LineFill.single(fill(color)))
+    val lineSpecs = playerColors.mapIndexed { index, color ->
+        val isSelected = selectedPlayerIndex == index
+        val isAnySelected = selectedPlayerIndex >= 0
+        val displayColor = when {
+            !isAnySelected -> color
+            isSelected -> color
+            else -> color.copy(alpha = 0.15f)
+        }
+        val thickness = if (isSelected) 4.dp else 2.dp
+        rememberLine(
+            fill = LineCartesianLayer.LineFill.single(fill(displayColor)),
+            thickness = thickness,
+        )
     }
 
     Card(
@@ -300,23 +312,51 @@ private fun ScoreChart(detail: SessionDetail) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                detail.players.forEach { player ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                detail.players.forEachIndexed { index, player ->
+                    val isSelected = selectedPlayerIndex == index
+                    val isAnySelected = selectedPlayerIndex >= 0
+                    Surface(
+                        onClick = {
+                            selectedPlayerIndex = if (isSelected) -1 else index
+                        },
+                        shape = MaterialTheme.shapes.small,
+                        color = if (isSelected) {
+                            Color(player.avatarColor).copy(alpha = 0.15f)
+                        } else {
+                            Color.Transparent
+                        },
+                        modifier = Modifier.padding(vertical = 2.dp),
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(10.dp)
-                                .background(Color(player.avatarColor), shape = androidx.compose.foundation.shape.CircleShape)
-                        )
-                        Text(
-                            text = player.name,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(10.dp)
+                                    .background(
+                                        color = if (!isAnySelected || isSelected) {
+                                            Color(player.avatarColor)
+                                        } else {
+                                            Color(player.avatarColor).copy(alpha = 0.3f)
+                                        },
+                                        shape = androidx.compose.foundation.shape.CircleShape,
+                                    )
+                            )
+                            Text(
+                                text = player.name,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (!isAnySelected || isSelected) {
+                                    MaterialTheme.colorScheme.onSurface
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                },
+                            )
+                        }
                     }
                 }
             }
