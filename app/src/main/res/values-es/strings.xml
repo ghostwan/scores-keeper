@@ -76,10 +76,16 @@
     <string name="last_sync">Última sync: %1$s</string>
     <string name="error_prefix">Error: %1$s</string>
     <string name="auto_sync_info">La sincronización es automática después de cada cambio.</string>
+    <string name="sync_now_button">Sincronizar ahora</string>
     <string name="backup_button">Guardar</string>
     <string name="restore_button">Restaurar</string>
     <string name="disconnect">Desconectar</string>
     <string name="connect_google_drive_info">Conecta tu cuenta de Google para guardar automáticamente tus datos en Google Drive.</string>
+    <!-- Display preferences -->
+    <string name="display_section">Pantalla</string>
+    <string name="chart_area_fill">Gráfico de área</string>
+    <string name="chart_area_fill_description">Rellenar el área bajo las curvas de puntuación</string>
+
     <string name="about">Acerca de</string>
     <string name="version">Versión %1$s</string>
     <string name="connect_google_drive">Conectar Google Drive</string>

@@ -1,8 +1,6 @@
 package com.scoreskeeper.presentation.screens.settings
 
 import android.app.Application
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.scoreskeeper.R
@@ -10,6 +8,7 @@ import com.scoreskeeper.data.backup.BackupResult
 import com.scoreskeeper.data.backup.GoogleAuthHelper
 import com.scoreskeeper.data.backup.SyncManager
 import com.scoreskeeper.data.backup.SyncState
+import com.scoreskeeper.data.preferences.AppPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,11 +22,15 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val syncManager: SyncManager,
     private val googleAuthHelper: GoogleAuthHelper,
+    private val appPreferences: AppPreferences,
     private val application: Application,
 ) : ViewModel() {
 
     val syncState: StateFlow<SyncState> = syncManager.syncState
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SyncState())
+
+    val chartAreaFill: StateFlow<Boolean> = appPreferences.chartAreaFill
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message.asStateFlow()
@@ -49,6 +52,12 @@ class SettingsViewModel @Inject constructor(
                     syncManager.disableSync()
                 }
             }
+        }
+    }
+
+    fun toggleChartAreaFill(enabled: Boolean) {
+        viewModelScope.launch {
+            appPreferences.setChartAreaFill(enabled)
         }
     }
 

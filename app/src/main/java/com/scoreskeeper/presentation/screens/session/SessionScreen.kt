@@ -54,6 +54,7 @@ fun SessionScreen(
     viewModel: SessionViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val chartAreaFill by viewModel.chartAreaFill.collectAsStateWithLifecycle()
     val detail = state.detail
     val isInProgress = detail?.session?.status == SessionStatus.IN_PROGRESS
 
@@ -138,7 +139,7 @@ fun SessionScreen(
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                     )
-                    ScoreChart(detail = detail)
+                    ScoreChart(detail = detail, areaFill = chartAreaFill)
                 }
             }
 
@@ -251,7 +252,7 @@ private fun WinnerBanner(winners: List<Player>) {
 }
 
 @Composable
-private fun ScoreChart(detail: SessionDetail) {
+private fun ScoreChart(detail: SessionDetail, areaFill: Boolean = true) {
     val modelProducer = remember { CartesianChartModelProducer() }
     val maxRound = detail.rounds.maxOf { it.round }
     val playerColors = detail.players.map { Color(it.avatarColor) }
@@ -282,8 +283,15 @@ private fun ScoreChart(detail: SessionDetail) {
             else -> color.copy(alpha = 0.15f)
         }
         val thickness = if (isSelected) 4.dp else 2.dp
+        val lineFill = LineCartesianLayer.LineFill.single(fill(displayColor))
+        val lineAreaFill = if (areaFill) {
+            LineCartesianLayer.AreaFill.single(fill(displayColor.copy(alpha = 0.2f)))
+        } else {
+            null
+        }
         rememberLine(
-            fill = LineCartesianLayer.LineFill.single(fill(displayColor)),
+            fill = lineFill,
+            areaFill = lineAreaFill,
             thickness = thickness,
         )
     }

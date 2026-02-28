@@ -31,6 +31,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val syncState by viewModel.syncState.collectAsStateWithLifecycle()
+    val chartAreaFill by viewModel.chartAreaFill.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var showRestoreDialog by remember { mutableStateOf(false) }
@@ -78,7 +79,7 @@ fun SettingsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Google Drive section
+            // ---- Google Drive section ----
             Text(
                 stringResource(R.string.google_drive_backup),
                 style = MaterialTheme.typography.titleMedium,
@@ -100,7 +101,7 @@ fun SettingsScreen(
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
                             Icon(
-                                Icons.Default.AccountCircle,
+                                Icons.Default.CloudDone,
                                 null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(40.dp),
@@ -132,9 +133,9 @@ fun SettingsScreen(
                                 )
                             } else if (syncState.lastSyncTime > 0) {
                                 Icon(
-                                    Icons.Default.CloudDone,
+                                    Icons.Default.Schedule,
                                     null,
-                                    tint = MaterialTheme.colorScheme.primary,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(16.dp),
                                 )
                                 val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
@@ -187,10 +188,20 @@ fun SettingsScreen(
                             }
                         }
 
+                        FilledTonalButton(
+                            onClick = { viewModel.manualBackup() },
+                            enabled = !syncState.isSyncing,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Icon(Icons.Default.Sync, null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.sync_now_button))
+                        }
+
                         TextButton(
                             onClick = { viewModel.disconnect() },
                             colors = ButtonDefaults.textButtonColors(
-                                contentColor = MaterialTheme.colorScheme.error
+                                contentColor = MaterialTheme.colorScheme.error,
                             ),
                         ) {
                             Icon(Icons.Default.Logout, null, modifier = Modifier.size(18.dp))
@@ -199,10 +210,22 @@ fun SettingsScreen(
                         }
                     } else {
                         // Not connected state
-                        Text(
-                            stringResource(R.string.connect_google_drive_info),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            Icon(
+                                Icons.Default.CloudOff,
+                                null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(40.dp),
+                            )
+                            Text(
+                                stringResource(R.string.connect_google_drive_info),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
 
                         Button(
                             onClick = { viewModel.launchSignIn(signInLauncher) },
@@ -216,7 +239,42 @@ fun SettingsScreen(
                 }
             }
 
-            // App info
+            // ---- Display section ----
+            Text(
+                stringResource(R.string.display_section),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.chart_area_fill),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        Text(
+                            stringResource(R.string.chart_area_fill_description),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Switch(
+                        checked = chartAreaFill,
+                        onCheckedChange = viewModel::toggleChartAreaFill,
+                    )
+                }
+            }
+
+            // ---- About section ----
             Text(
                 stringResource(R.string.about),
                 style = MaterialTheme.typography.titleMedium,

@@ -78,10 +78,16 @@
     <string name="last_sync">Last sync: %1$s</string>
     <string name="error_prefix">Error: %1$s</string>
     <string name="auto_sync_info">Sync is automatic after each change.</string>
+    <string name="sync_now_button">Sync now</string>
     <string name="backup_button">Back up</string>
     <string name="restore_button">Restore</string>
     <string name="disconnect">Disconnect</string>
     <string name="connect_google_drive_info">Connect your Google account to automatically back up your data to Google Drive.</string>
+    <!-- Display preferences -->
+    <string name="display_section">Display</string>
+    <string name="chart_area_fill">Area chart</string>
+    <string name="chart_area_fill_description">Fill the area under score curves</string>
+
     <string name="about">About</string>
     <string name="version">Version %1$s</string>
     <string name="connect_google_drive">Connect Google Drive</string>

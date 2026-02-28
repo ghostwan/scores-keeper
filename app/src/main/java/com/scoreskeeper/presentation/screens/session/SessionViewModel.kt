@@ -10,6 +10,7 @@ import com.scoreskeeper.domain.usecase.session.DeleteRoundUseCase
 import com.scoreskeeper.domain.usecase.session.FinishSessionUseCase
 import com.scoreskeeper.domain.usecase.session.GetSessionDetailUseCase
 import com.scoreskeeper.domain.usecase.session.UpdateRoundScoresUseCase
+import com.scoreskeeper.data.preferences.AppPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -36,12 +37,16 @@ class SessionViewModel @Inject constructor(
     private val finishSessionUseCase: FinishSessionUseCase,
     private val deleteRoundUseCase: DeleteRoundUseCase,
     private val updateRoundScoresUseCase: UpdateRoundScoresUseCase,
+    appPreferences: AppPreferences,
 ) : ViewModel() {
 
     private val sessionId: Long = checkNotNull(savedStateHandle["sessionId"])
 
     private val _uiState = MutableStateFlow(SessionUiState())
     val uiState = _uiState.asStateFlow()
+
+    val chartAreaFill: StateFlow<Boolean> = appPreferences.chartAreaFill
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
     init {
         getSessionDetailUseCase(sessionId)
