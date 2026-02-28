@@ -189,16 +189,6 @@ fun SettingsScreen(
                             }
                         }
 
-                        FilledTonalButton(
-                            onClick = { viewModel.manualBackup() },
-                            enabled = !syncState.isSyncing,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Icon(Icons.Default.Sync, null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text(stringResource(R.string.sync_now_button))
-                        }
-
                         TextButton(
                             onClick = { viewModel.disconnect() },
                             colors = ButtonDefaults.textButtonColors(

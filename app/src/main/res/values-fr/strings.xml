@@ -78,7 +78,7 @@
     <string name="last_sync">Dernière sync : %1$s</string>
     <string name="error_prefix">Erreur : %1$s</string>
     <string name="auto_sync_info">La synchronisation est automatique après chaque modification.</string>
-    <string name="sync_now_button">Synchroniser maintenant</string>
+
     <string name="backup_button">Sauvegarder</string>
     <string name="restore_button">Restaurer</string>
     <string name="disconnect">Déconnecter</string>

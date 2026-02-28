@@ -80,7 +80,7 @@
     <string name="last_sync">Last sync: %1$s</string>
     <string name="error_prefix">Error: %1$s</string>
     <string name="auto_sync_info">Sync is automatic after each change.</string>
-    <string name="sync_now_button">Sync now</string>
+
     <string name="backup_button">Back up</string>
     <string name="restore_button">Restore</string>
     <string name="disconnect">Disconnect</string>
