@@ -1,4 +1,4 @@
 <resources>
     <!-- Base application theme -->
-    <style name="Theme.ScoresKeeper" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.ScoresKeeper" parent="Theme.AppCompat.Light.NoActionBar" />
 </resources>
