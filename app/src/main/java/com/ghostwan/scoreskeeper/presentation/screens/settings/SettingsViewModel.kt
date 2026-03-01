@@ -1,8 +1,6 @@
 package com.ghostwan.scoreskeeper.presentation.screens.settings
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ghostwan.scoreskeeper.R
@@ -20,11 +18,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class AppLanguage(
-    val code: String,
-    val displayName: String,
-)
-
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val syncManager: SyncManager,
@@ -32,17 +25,6 @@ class SettingsViewModel @Inject constructor(
     private val appPreferences: AppPreferences,
     private val application: Application,
 ) : ViewModel() {
-
-    val availableLanguages = listOf(
-        AppLanguage("", application.getString(R.string.language_system)),
-        AppLanguage("en", "English"),
-        AppLanguage("fr", "Français"),
-        AppLanguage("es", "Español"),
-        AppLanguage("de", "Deutsch"),
-    )
-
-    private val _currentLanguageCode = MutableStateFlow(getCurrentLanguageCode())
-    val currentLanguageCode: StateFlow<String> = _currentLanguageCode.asStateFlow()
 
     val syncState: StateFlow<SyncState> = syncManager.syncState
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SyncState())
@@ -110,20 +92,5 @@ class SettingsViewModel @Inject constructor(
 
     fun clearMessage() {
         _message.value = null
-    }
-
-    fun changeLanguage(languageCode: String) {
-        val localeList = if (languageCode.isEmpty()) {
-            LocaleListCompat.getEmptyLocaleList()
-        } else {
-            LocaleListCompat.forLanguageTags(languageCode)
-        }
-        AppCompatDelegate.setApplicationLocales(localeList)
-        _currentLanguageCode.value = languageCode
-    }
-
-    private fun getCurrentLanguageCode(): String {
-        val locales = AppCompatDelegate.getApplicationLocales()
-        return if (locales.isEmpty) "" else locales.get(0)?.language ?: ""
     }
 }

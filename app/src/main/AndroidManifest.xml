@@ -29,6 +29,14 @@
             </intent-filter>
         </activity>
 
+        <receiver
+            android:name=".LanguageBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.ghostwan.scoreskeeper.SET_LANGUAGE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
