@@ -35,7 +35,9 @@ import com.ghostwan.scoreskeeper.presentation.components.PlayerAvatar
 import com.ghostwan.scoreskeeper.presentation.screens.session.CreatePlayerViewModel
 import com.ghostwan.scoreskeeper.presentation.theme.PlayerColors
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.ui.platform.LocalContext
 import java.net.URLEncoder
@@ -101,9 +103,43 @@ fun GameDetailScreen(
                                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                                     },
                                 )
+                                val geminiNotInstalledMsg = stringResource(R.string.rules_gemini_not_installed)
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.rules_gemini_app)) },
+                                    leadingIcon = { Icon(Icons.Default.AutoAwesome, null) },
+                                    onClick = {
+                                        showRulesMenu = false
+                                        val geminiPackage = "com.google.android.apps.bard"
+                                        val isGeminiInstalled = try {
+                                            context.packageManager.getPackageInfo(geminiPackage, 0)
+                                            true
+                                        } catch (_: PackageManager.NameNotFoundException) {
+                                            false
+                                        }
+                                        if (isGeminiInstalled) {
+                                            val lang = Locale.getDefault().language.let {
+                                                if (it in listOf("fr", "es", "de")) it else "en"
+                                            }
+                                            val promptText = when (lang) {
+                                                "fr" -> "Explique-moi les règles du jeu ${game.name} en français de manière claire et concise"
+                                                "es" -> "Explícame las reglas del juego ${game.name} en español de forma clara y concisa"
+                                                "de" -> "Erkläre mir die Regeln des Spiels ${game.name} auf Deutsch klar und prägnant"
+                                                else -> "Explain the rules of the game ${game.name} in English clearly and concisely"
+                                            }
+                                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                                `package` = geminiPackage
+                                                type = "text/plain"
+                                                putExtra(Intent.EXTRA_TEXT, promptText)
+                                            }
+                                            context.startActivity(intent)
+                                        } else {
+                                            Toast.makeText(context, geminiNotInstalledMsg, Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
+                                )
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.rules_ask_ai) + " (${aiProvider.label})") },
-                                    leadingIcon = { Icon(Icons.Default.AutoAwesome, null) },
+                                    leadingIcon = { Icon(Icons.Default.Language, null) },
                                     onClick = {
                                         showRulesMenu = false
                                         val lang = Locale.getDefault().language.let {
