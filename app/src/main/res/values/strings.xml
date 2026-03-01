@@ -57,6 +57,7 @@
     <string name="start_session">Start session</string>
     <string name="new_player">New player</string>
     <string name="player_name_label">First name / Nickname</string>
+    <string name="edit_player_name_title">Edit player name</string>
     <string name="color_label">Color:</string>
 
     <!-- Session -->

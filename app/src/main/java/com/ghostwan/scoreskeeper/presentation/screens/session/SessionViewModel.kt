@@ -10,6 +10,8 @@ import com.ghostwan.scoreskeeper.domain.usecase.session.DeleteRoundUseCase
 import com.ghostwan.scoreskeeper.domain.usecase.session.FinishSessionUseCase
 import com.ghostwan.scoreskeeper.domain.usecase.session.GetSessionDetailUseCase
 import com.ghostwan.scoreskeeper.domain.usecase.session.UpdateRoundScoresUseCase
+import com.ghostwan.scoreskeeper.domain.model.Player
+import com.ghostwan.scoreskeeper.domain.usecase.player.UpdatePlayerUseCase
 import com.ghostwan.scoreskeeper.data.preferences.AppPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -27,6 +29,9 @@ data class SessionUiState(
     val editingRound: Int? = null,
     // Delete round state
     val roundToDelete: Int? = null,
+    // Edit player state
+    val editingPlayer: Player? = null,
+    val editPlayerName: String = "",
 )
 
 @HiltViewModel
@@ -37,6 +42,7 @@ class SessionViewModel @Inject constructor(
     private val finishSessionUseCase: FinishSessionUseCase,
     private val deleteRoundUseCase: DeleteRoundUseCase,
     private val updateRoundScoresUseCase: UpdateRoundScoresUseCase,
+    private val updatePlayerUseCase: UpdatePlayerUseCase,
     appPreferences: AppPreferences,
 ) : ViewModel() {
 
@@ -189,6 +195,27 @@ class SessionViewModel @Inject constructor(
         viewModelScope.launch {
             finishSessionUseCase(sessionId)
             _uiState.update { it.copy(showFinishDialog = false) }
+        }
+    }
+
+    // ---- Edit player ----
+
+    fun showEditPlayerDialog(player: Player) =
+        _uiState.update { it.copy(editingPlayer = player, editPlayerName = player.name) }
+
+    fun hideEditPlayerDialog() =
+        _uiState.update { it.copy(editingPlayer = null, editPlayerName = "") }
+
+    fun onEditPlayerNameChange(name: String) =
+        _uiState.update { it.copy(editPlayerName = name) }
+
+    fun confirmEditPlayer() {
+        val player = _uiState.value.editingPlayer ?: return
+        val newName = _uiState.value.editPlayerName.trim()
+        if (newName.isBlank()) return
+        viewModelScope.launch {
+            updatePlayerUseCase(player.copy(name = newName))
+            _uiState.update { it.copy(editingPlayer = null, editPlayerName = "") }
         }
     }
 }

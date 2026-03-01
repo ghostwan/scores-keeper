@@ -55,6 +55,7 @@
     <string name="start_session">Démarrer la partie</string>
     <string name="new_player">Nouveau joueur</string>
     <string name="player_name_label">Prénom / Pseudo</string>
+    <string name="edit_player_name_title">Modifier le nom du joueur</string>
     <string name="color_label">Couleur :</string>
 
     <!-- Session -->

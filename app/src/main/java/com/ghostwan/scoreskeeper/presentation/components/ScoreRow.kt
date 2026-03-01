@@ -25,10 +25,13 @@ fun ScoreRow(
     playerColor: Long,
     totalScore: Int,
     isWinner: Boolean = false,
+    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
+        onClick = onClick ?: {},
+        enabled = onClick != null,
         color = if (isWinner) MaterialTheme.colorScheme.primaryContainer
         else MaterialTheme.colorScheme.surface,
         shape = MaterialTheme.shapes.medium,

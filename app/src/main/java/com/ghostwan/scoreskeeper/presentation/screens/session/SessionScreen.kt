@@ -124,6 +124,7 @@ fun SessionScreen(
                     playerColor = player.avatarColor,
                     totalScore = total,
                     isWinner = isWinner,
+                    onClick = { viewModel.showEditPlayerDialog(player) },
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 3.dp),
                 )
@@ -215,6 +216,31 @@ fun SessionScreen(
             },
             dismissButton = {
                 TextButton(onClick = viewModel::hideDeleteRoundDialog) { Text(stringResource(R.string.cancel)) }
+            },
+        )
+    }
+
+    // Edit player name dialog
+    if (state.editingPlayer != null) {
+        AlertDialog(
+            onDismissRequest = viewModel::hideEditPlayerDialog,
+            title = { Text(stringResource(R.string.edit_player_name_title)) },
+            text = {
+                OutlinedTextField(
+                    value = state.editPlayerName,
+                    onValueChange = viewModel::onEditPlayerNameChange,
+                    label = { Text(stringResource(R.string.player_name_label)) },
+                    singleLine = true,
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = viewModel::confirmEditPlayer,
+                    enabled = state.editPlayerName.isNotBlank(),
+                ) { Text(stringResource(R.string.save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::hideEditPlayerDialog) { Text(stringResource(R.string.cancel)) }
             },
         )
     }

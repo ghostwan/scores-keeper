@@ -55,6 +55,7 @@
     <string name="start_session">Sitzung starten</string>
     <string name="new_player">Neuer Spieler</string>
     <string name="player_name_label">Vorname / Spitzname</string>
+    <string name="edit_player_name_title">Spielername bearbeiten</string>
     <string name="color_label">Farbe:</string>
 
     <!-- Session -->
