@@ -97,6 +97,11 @@
     <string name="chart_start_from_zero_description">Punktekurven starten bei Null statt bei der ersten Runde</string>
 
 
+    <!-- Language -->
+    <string name="language_section">Sprache</string>
+    <string name="language_label">App-Sprache</string>
+    <string name="language_system">Systemstandard</string>
+
     <string name="about">Über</string>
     <string name="version">Version %1$s</string>
     <string name="connect_google_drive">Google Drive verbinden</string>

@@ -97,6 +97,11 @@
     <string name="chart_start_from_zero_description">Las curvas de puntuación empiezan desde cero en vez de la primera ronda</string>
 
 
+    <!-- Language -->
+    <string name="language_section">Idioma</string>
+    <string name="language_label">Idioma de la app</string>
+    <string name="language_system">Por defecto (sistema)</string>
+
     <string name="about">Acerca de</string>
     <string name="version">Versión %1$s</string>
     <string name="connect_google_drive">Conectar Google Drive</string>

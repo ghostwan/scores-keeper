@@ -3,6 +3,7 @@ package com.ghostwan.scoreskeeper.presentation.screens.settings
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -33,9 +34,11 @@ fun SettingsScreen(
     val syncState by viewModel.syncState.collectAsStateWithLifecycle()
     val chartAreaFill by viewModel.chartAreaFill.collectAsStateWithLifecycle()
     val chartStartFromZero by viewModel.chartStartFromZero.collectAsStateWithLifecycle()
+    val currentLanguageCode by viewModel.currentLanguageCode.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var showRestoreDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
 
     // Google Sign-In launcher
     val signInLauncher = rememberLauncherForActivityResult(
@@ -288,6 +291,53 @@ fun SettingsScreen(
                 }
             }
 
+            // ---- Language section ----
+            Text(
+                stringResource(R.string.language_section),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { showLanguageDialog = true },
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        Icons.Default.Language,
+                        null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(24.dp),
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.language_label),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        Text(
+                            viewModel.availableLanguages
+                                .firstOrNull { it.code == currentLanguageCode }
+                                ?.displayName
+                                ?: stringResource(R.string.language_system),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Icon(
+                        Icons.Default.ChevronRight,
+                        null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
             // ---- About section ----
             Text(
                 stringResource(R.string.about),
@@ -324,6 +374,48 @@ fun SettingsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showRestoreDialog = false }) { Text(stringResource(R.string.cancel)) }
+            },
+        )
+    }
+
+    // Language selection dialog
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = { Text(stringResource(R.string.language_label)) },
+            text = {
+                Column {
+                    viewModel.availableLanguages.forEach { language ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.changeLanguage(language.code)
+                                    showLanguageDialog = false
+                                }
+                                .padding(vertical = 12.dp, horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = language.code == currentLanguageCode,
+                                onClick = {
+                                    viewModel.changeLanguage(language.code)
+                                    showLanguageDialog = false
+                                },
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                language.displayName,
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showLanguageDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
             },
         )
     }

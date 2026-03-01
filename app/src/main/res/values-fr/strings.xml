@@ -97,6 +97,11 @@
     <string name="chart_start_from_zero_description">Les courbes de score démarrent à zéro au lieu du premier tour</string>
 
 
+    <!-- Language -->
+    <string name="language_section">Langue</string>
+    <string name="language_label">Langue de l\'application</string>
+    <string name="language_system">Par défaut (système)</string>
+
     <string name="about">À propos</string>
     <string name="version">Version %1$s</string>
     <string name="connect_google_drive">Connecter Google Drive</string>
