@@ -13,6 +13,7 @@ hiltNavigationCompose = "1.2.0"
 kotlinxCoroutines = "1.9.0"
 vico = "2.0.0-alpha.28"
 datastore = "1.1.1"
+browser = "1.8.0"
 playServicesAuth = "21.3.0"
 googleApiClient = "2.7.0"
 googleApiDrive = "v3-rev20241027-2.0.0"
@@ -57,6 +58,9 @@ vico-core = { group = "com.patrykandpatrick.vico", name = "core", version.ref = 
 
 # DataStore
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+
+# Browser (Custom Tabs)
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 
 # Google Sign-In
 google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }

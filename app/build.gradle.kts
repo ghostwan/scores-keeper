@@ -96,6 +96,9 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
+    // Browser (Custom Tabs)
+    implementation(libs.androidx.browser)
+
     // Google Sign-In
     implementation(libs.google.play.services.auth)
 

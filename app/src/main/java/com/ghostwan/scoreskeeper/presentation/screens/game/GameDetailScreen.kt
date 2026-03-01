@@ -36,6 +36,7 @@ import com.ghostwan.scoreskeeper.presentation.screens.session.CreatePlayerViewMo
 import com.ghostwan.scoreskeeper.presentation.theme.PlayerColors
 import android.content.Intent
 import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.ui.platform.LocalContext
 import java.net.URLEncoder
 import java.time.format.DateTimeFormatter
@@ -108,18 +109,19 @@ fun GameDetailScreen(
                                         val lang = Locale.getDefault().language.let {
                                             if (it in listOf("fr", "es", "de")) it else "en"
                                         }
-                                        val langLabel = when (lang) {
-                                            "fr" -> "en français"
-                                            "es" -> "en español"
-                                            "de" -> "auf Deutsch"
-                                            else -> "in English"
+                                        val promptText = when (lang) {
+                                            "fr" -> "Explique-moi les règles du jeu ${game.name} en français de manière claire et concise"
+                                            "es" -> "Explícame las reglas del juego ${game.name} en español de forma clara y concisa"
+                                            "de" -> "Erkläre mir die Regeln des Spiels ${game.name} auf Deutsch klar und prägnant"
+                                            else -> "Explain the rules of the game ${game.name} in English clearly and concisely"
                                         }
-                                        val prompt = URLEncoder.encode(
-                                            "Explique-moi les règles du jeu ${game.name} $langLabel de manière claire et concise",
-                                            "UTF-8",
-                                        )
-                                        val url = aiProvider.urlTemplate.format(prompt)
-                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                                        val encodedPrompt = URLEncoder.encode(promptText, "UTF-8")
+                                        val url = aiProvider.urlTemplate.format(encodedPrompt)
+                                        // Use Custom Tabs to force opening in browser (not native app)
+                                        // so the ?q= query parameter is properly handled
+                                        CustomTabsIntent.Builder()
+                                            .build()
+                                            .launchUrl(context, Uri.parse(url))
                                     },
                                 )
                             }
