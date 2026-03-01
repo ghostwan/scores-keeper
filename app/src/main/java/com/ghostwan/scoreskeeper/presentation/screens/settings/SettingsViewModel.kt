@@ -8,7 +8,6 @@ import com.ghostwan.scoreskeeper.data.backup.BackupResult
 import com.ghostwan.scoreskeeper.data.backup.GoogleAuthHelper
 import com.ghostwan.scoreskeeper.data.backup.SyncManager
 import com.ghostwan.scoreskeeper.data.backup.SyncState
-import com.ghostwan.scoreskeeper.data.preferences.AiProvider
 import com.ghostwan.scoreskeeper.data.preferences.AppPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,9 +34,6 @@ class SettingsViewModel @Inject constructor(
 
     val chartStartFromZero: StateFlow<Boolean> = appPreferences.chartStartFromZero
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-
-    val aiProvider: StateFlow<AiProvider> = appPreferences.aiProvider
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AiProvider.CHATGPT)
 
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message.asStateFlow()
@@ -71,12 +67,6 @@ class SettingsViewModel @Inject constructor(
     fun toggleChartStartFromZero(enabled: Boolean) {
         viewModelScope.launch {
             appPreferences.setChartStartFromZero(enabled)
-        }
-    }
-
-    fun setAiProvider(provider: AiProvider) {
-        viewModelScope.launch {
-            appPreferences.setAiProvider(provider)
         }
     }
 

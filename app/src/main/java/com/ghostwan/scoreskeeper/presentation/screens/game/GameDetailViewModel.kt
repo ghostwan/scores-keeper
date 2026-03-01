@@ -3,8 +3,6 @@ package com.ghostwan.scoreskeeper.presentation.screens.game
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ghostwan.scoreskeeper.data.preferences.AiProvider
-import com.ghostwan.scoreskeeper.data.preferences.AppPreferences
 import com.ghostwan.scoreskeeper.domain.model.Game
 import com.ghostwan.scoreskeeper.domain.model.Player
 import com.ghostwan.scoreskeeper.domain.model.PlayerStats
@@ -42,16 +40,12 @@ class GameDetailViewModel @Inject constructor(
     getPlayerStatsUseCase: GetPlayerStatsUseCase,
     private val createSessionUseCase: CreateSessionUseCase,
     private val deleteSessionUseCase: DeleteSessionUseCase,
-    appPreferences: AppPreferences,
 ) : ViewModel() {
 
     private val gameId: Long = checkNotNull(savedStateHandle["gameId"])
 
     private val _uiState = MutableStateFlow(GameDetailUiState())
     val uiState = _uiState.asStateFlow()
-
-    val aiProvider: StateFlow<AiProvider> = appPreferences.aiProvider
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AiProvider.CHATGPT)
 
     init {
         viewModelScope.launch {
