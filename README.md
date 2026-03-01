@@ -14,6 +14,21 @@ Android app for tracking board game scores. Create custom games, manage players,
 - **Google Drive backup** — Automatic sync after each change with manual backup/restore
 - **French UI**
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/home.png" width="24%" />
+  <img src="screenshots/new_game.png" width="24%" />
+  <img src="screenshots/new_turn.png" width="24%" />
+  <img src="screenshots/game.png" width="24%" />
+</p>
+<p align="center">
+  <img src="screenshots/game_ending.png" width="24%" />
+  <img src="screenshots/game_score_board.png" width="24%" />
+  <img src="screenshots/games.png" width="24%" />
+  <img src="screenshots/settings.png" width="24%" />
+</p>
+
 ## Tech Stack
 
 | Component | Technology |
