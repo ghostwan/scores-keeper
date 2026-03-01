@@ -15,9 +15,6 @@ import com.ghostwan.scoreskeeper.domain.model.SessionStatus
 import com.ghostwan.scoreskeeper.domain.repository.SessionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -71,14 +68,11 @@ class SessionRepositoryImpl @Inject constructor(
 
     override fun getSessionDetailFlow(sessionId: Long): Flow<SessionDetail?> {
         val roundsFlow = roundScoreDao.getRoundsForSession(sessionId)
-        val sessionFlow = flow {
-            val entity = sessionDao.getSessionById(sessionId)
-            emit(entity)
-        }
         return combine(
             roundsFlow,
             sessionDao.getAllSessions(), // triggers re-emit on session status change
-        ) { rounds, _ ->
+            playerDao.getAllPlayers(), // triggers re-emit on player name/color change
+        ) { rounds, _, _ ->
             val entity = sessionDao.getSessionById(sessionId) ?: return@combine null
             val game = gameDao.getGameById(entity.gameId) ?: return@combine null
             val playerIds = sessionDao.getPlayerIdsForSession(sessionId)
