@@ -1,5 +1,6 @@
 package com.ghostwan.scoreskeeper.presentation.screens.session
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,6 +33,7 @@ data class SessionUiState(
     // Edit player state
     val editingPlayer: Player? = null,
     val editPlayerName: String = "",
+    val error: String? = null,
 )
 
 @HiltViewModel
@@ -100,21 +102,26 @@ class SessionViewModel @Inject constructor(
         if (scores.any { (_, v) -> v.toIntOrNull() == null }) return
 
         viewModelScope.launch {
-            scores.forEach { (playerId, value) ->
-                addRoundScoreUseCase(
-                    RoundScore(
-                        sessionId = sessionId,
-                        playerId = playerId,
-                        round = round,
-                        points = value.toInt(),
+            try {
+                scores.forEach { (playerId, value) ->
+                    addRoundScoreUseCase(
+                        RoundScore(
+                            sessionId = sessionId,
+                            playerId = playerId,
+                            round = round,
+                            points = value.toInt(),
+                        )
                     )
-                )
-            }
-            _uiState.update {
-                it.copy(
-                    showScoreEntry = false,
-                    roundInputs = detail.players.associate { p -> p.id to "" },
-                )
+                }
+                _uiState.update {
+                    it.copy(
+                        showScoreEntry = false,
+                        roundInputs = detail.players.associate { p -> p.id to "" },
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to submit round", e)
+                _uiState.update { it.copy(error = e.message) }
             }
         }
     }
@@ -149,23 +156,28 @@ class SessionViewModel @Inject constructor(
         val existingScores = detail.rounds.filter { it.round == editingRound }
 
         viewModelScope.launch {
-            val updatedScores = scores.map { (playerId, value) ->
-                val existing = existingScores.find { it.playerId == playerId }
-                RoundScore(
-                    id = existing?.id ?: 0,
-                    sessionId = sessionId,
-                    playerId = playerId,
-                    round = editingRound,
-                    points = value.toInt(),
-                )
-            }
-            updateRoundScoresUseCase(updatedScores)
-            _uiState.update {
-                it.copy(
-                    showScoreEntry = false,
-                    editingRound = null,
-                    roundInputs = detail.players.associate { p -> p.id to "" },
-                )
+            try {
+                val updatedScores = scores.map { (playerId, value) ->
+                    val existing = existingScores.find { it.playerId == playerId }
+                    RoundScore(
+                        id = existing?.id ?: 0,
+                        sessionId = sessionId,
+                        playerId = playerId,
+                        round = editingRound,
+                        points = value.toInt(),
+                    )
+                }
+                updateRoundScoresUseCase(updatedScores)
+                _uiState.update {
+                    it.copy(
+                        showScoreEntry = false,
+                        editingRound = null,
+                        roundInputs = detail.players.associate { p -> p.id to "" },
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to edit round", e)
+                _uiState.update { it.copy(error = e.message) }
             }
         }
     }
@@ -181,8 +193,13 @@ class SessionViewModel @Inject constructor(
     fun confirmDeleteRound() {
         val round = _uiState.value.roundToDelete ?: return
         viewModelScope.launch {
-            deleteRoundUseCase(sessionId, round)
-            _uiState.update { it.copy(roundToDelete = null) }
+            try {
+                deleteRoundUseCase(sessionId, round)
+                _uiState.update { it.copy(roundToDelete = null) }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to delete round", e)
+                _uiState.update { it.copy(roundToDelete = null, error = e.message) }
+            }
         }
     }
 
@@ -193,8 +210,13 @@ class SessionViewModel @Inject constructor(
 
     fun finishSession() {
         viewModelScope.launch {
-            finishSessionUseCase(sessionId)
-            _uiState.update { it.copy(showFinishDialog = false) }
+            try {
+                finishSessionUseCase(sessionId)
+                _uiState.update { it.copy(showFinishDialog = false) }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to finish session", e)
+                _uiState.update { it.copy(showFinishDialog = false, error = e.message) }
+            }
         }
     }
 
@@ -214,8 +236,19 @@ class SessionViewModel @Inject constructor(
         val newName = _uiState.value.editPlayerName.trim()
         if (newName.isBlank()) return
         viewModelScope.launch {
-            updatePlayerUseCase(player.copy(name = newName))
-            _uiState.update { it.copy(editingPlayer = null, editPlayerName = "") }
+            try {
+                updatePlayerUseCase(player.copy(name = newName))
+                _uiState.update { it.copy(editingPlayer = null, editPlayerName = "") }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to edit player", e)
+                _uiState.update { it.copy(editingPlayer = null, editPlayerName = "", error = e.message) }
+            }
         }
+    }
+
+    fun clearError() = _uiState.update { it.copy(error = null) }
+
+    companion object {
+        private const val TAG = "SessionVM"
     }
 }

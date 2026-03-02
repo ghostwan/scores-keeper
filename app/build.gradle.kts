@@ -23,6 +23,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -42,6 +43,10 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
     }
 
     packaging {
@@ -98,9 +103,6 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
-    // Browser (Custom Tabs)
-    implementation(libs.androidx.browser)
-
     // Google Sign-In
     implementation(libs.google.play.services.auth)
 
@@ -112,7 +114,4 @@ dependencies {
         exclude(group = "org.apache.httpcomponents")
     }
 
-    // WorkManager
-    implementation(libs.androidx.work.runtime)
-    implementation(libs.androidx.hilt.work)
 }

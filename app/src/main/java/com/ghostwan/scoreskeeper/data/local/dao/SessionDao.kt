@@ -16,7 +16,7 @@ interface SessionDao {
     @Query("SELECT * FROM sessions WHERE id = :id")
     suspend fun getSessionById(id: Long): SessionEntity?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertSession(session: SessionEntity): Long
 
     @Update
@@ -26,7 +26,7 @@ interface SessionDao {
     suspend fun deleteSession(session: SessionEntity)
 
     // Session-Players join
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertSessionPlayers(sessionPlayers: List<SessionPlayerEntity>)
 
     @Query("SELECT playerId FROM session_players WHERE sessionId = :sessionId")

@@ -1,9 +1,11 @@
 package com.ghostwan.scoreskeeper.presentation.screens.settings
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ghostwan.scoreskeeper.R
+import com.ghostwan.scoreskeeper.data.backup.BackupError
 import com.ghostwan.scoreskeeper.data.backup.BackupResult
 import com.ghostwan.scoreskeeper.data.backup.GoogleAuthHelper
 import com.ghostwan.scoreskeeper.data.backup.SyncManager
@@ -44,53 +46,96 @@ class SettingsViewModel @Inject constructor(
 
     fun onSignedIn(email: String, displayName: String) {
         viewModelScope.launch {
-            syncManager.enableSync(email, displayName)
+            try {
+                syncManager.enableSync(email, displayName)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to enable sync", e)
+                _message.value = application.getString(R.string.error_prefix, e.message ?: "")
+            }
         }
     }
 
     fun disconnect() {
         viewModelScope.launch {
-            googleAuthHelper.signOut {
-                viewModelScope.launch {
-                    syncManager.disableSync()
+            try {
+                googleAuthHelper.signOut {
+                    viewModelScope.launch {
+                        try {
+                            syncManager.disableSync()
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Failed to disable sync", e)
+                        }
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to sign out", e)
+                _message.value = application.getString(R.string.error_prefix, e.message ?: "")
             }
         }
     }
 
     fun toggleChartAreaFill(enabled: Boolean) {
         viewModelScope.launch {
-            appPreferences.setChartAreaFill(enabled)
+            try {
+                appPreferences.setChartAreaFill(enabled)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to toggle chart area fill", e)
+            }
         }
     }
 
     fun toggleChartStartFromZero(enabled: Boolean) {
         viewModelScope.launch {
-            appPreferences.setChartStartFromZero(enabled)
+            try {
+                appPreferences.setChartStartFromZero(enabled)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to toggle chart start from zero", e)
+            }
         }
     }
 
     fun manualBackup() {
         viewModelScope.launch {
-            val result = syncManager.manualBackup()
-            _message.value = when (result) {
-                is BackupResult.Success -> application.getString(R.string.backup_success)
-                is BackupResult.Error -> application.getString(R.string.error_prefix, result.message)
+            try {
+                val result = syncManager.manualBackup()
+                _message.value = when (result) {
+                    is BackupResult.Success -> application.getString(R.string.backup_success)
+                    is BackupResult.Error -> application.getString(R.string.error_prefix, result.error.toMessage())
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to backup", e)
+                _message.value = application.getString(R.string.error_prefix, e.message ?: "")
             }
         }
     }
 
     fun restoreBackup() {
         viewModelScope.launch {
-            val result = syncManager.restoreFromBackup()
-            _message.value = when (result) {
-                is BackupResult.Success -> application.getString(R.string.restore_success)
-                is BackupResult.Error -> application.getString(R.string.error_prefix, result.message)
+            try {
+                val result = syncManager.restoreFromBackup()
+                _message.value = when (result) {
+                    is BackupResult.Success -> application.getString(R.string.restore_success)
+                    is BackupResult.Error -> application.getString(R.string.error_prefix, result.error.toMessage())
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to restore", e)
+                _message.value = application.getString(R.string.error_prefix, e.message ?: "")
             }
         }
     }
 
+    private fun BackupError.toMessage(): String = when (this) {
+        BackupError.DB_NOT_FOUND -> application.getString(R.string.backup_error_db_not_found)
+        BackupError.NO_BACKUP_FOUND -> application.getString(R.string.backup_error_no_backup)
+        BackupError.NOT_CONNECTED -> application.getString(R.string.backup_error_not_connected)
+        BackupError.UNKNOWN -> application.getString(R.string.backup_error_unknown)
+    }
+
     fun clearMessage() {
         _message.value = null
+    }
+
+    companion object {
+        private const val TAG = "SettingsVM"
     }
 }

@@ -109,4 +109,8 @@
     <string name="restore_data_message">Die aktuellen Daten werden durch das Google Drive-Backup ersetzt. Die App muss neu gestartet werden.</string>
     <string name="backup_success">Sicherung an Google Drive gesendet</string>
     <string name="restore_success">Daten wiederhergestellt! Starten Sie die App neu.</string>
+    <string name="backup_error_db_not_found">Datenbank nicht gefunden</string>
+    <string name="backup_error_no_backup">Kein Backup auf Drive gefunden</string>
+    <string name="backup_error_not_connected">Nicht verbunden</string>
+    <string name="backup_error_unknown">Unbekannter Fehler</string>
 </resources>

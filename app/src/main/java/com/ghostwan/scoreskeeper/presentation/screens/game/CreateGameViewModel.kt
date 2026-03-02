@@ -1,5 +1,6 @@
 package com.ghostwan.scoreskeeper.presentation.screens.game
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ghostwan.scoreskeeper.domain.model.Game
@@ -20,6 +21,7 @@ data class CreateGameUiState(
     val lowestScoreWins: Boolean = false,
     val isLoading: Boolean = false,
     val saved: Boolean = false,
+    val error: String? = null,
 )
 
 @HiltViewModel
@@ -49,18 +51,29 @@ class CreateGameViewModel @Inject constructor(
         val state = _uiState.value
         if (state.name.isBlank()) return
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            createGameUseCase(
-                Game(
-                    name = state.name.trim(),
-                    description = state.description.trim(),
-                    icon = state.icon,
-                    minPlayers = state.minPlayers,
-                    maxPlayers = state.maxPlayers,
-                    lowestScoreWins = state.lowestScoreWins,
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            try {
+                createGameUseCase(
+                    Game(
+                        name = state.name.trim(),
+                        description = state.description.trim(),
+                        icon = state.icon,
+                        minPlayers = state.minPlayers,
+                        maxPlayers = state.maxPlayers,
+                        lowestScoreWins = state.lowestScoreWins,
+                    )
                 )
-            )
-            _uiState.update { it.copy(isLoading = false, saved = true) }
+                _uiState.update { it.copy(isLoading = false, saved = true) }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save game", e)
+                _uiState.update { it.copy(isLoading = false, error = e.message) }
+            }
         }
+    }
+
+    fun clearError() = _uiState.update { it.copy(error = null) }
+
+    companion object {
+        private const val TAG = "CreateGameVM"
     }
 }

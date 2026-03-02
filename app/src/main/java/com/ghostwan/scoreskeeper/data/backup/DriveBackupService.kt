@@ -53,7 +53,7 @@ class DriveBackupService @Inject constructor(
             val dbFile = context.getDatabasePath(DB_NAME)
 
             if (!dbFile.exists()) {
-                return@withContext BackupResult.Error("Base de données introuvable")
+                return@withContext BackupResult.Error(BackupError.DB_NOT_FOUND)
             }
 
             // Close WAL checkpoint to ensure all data is in the main db file
@@ -83,7 +83,7 @@ class DriveBackupService @Inject constructor(
             BackupResult.Success
         } catch (e: Exception) {
             Log.e(TAG, "Backup failed", e)
-            BackupResult.Error(e.message ?: "Erreur inconnue")
+            BackupResult.Error(BackupError.UNKNOWN, e.message)
         }
     }
 
@@ -95,7 +95,7 @@ class DriveBackupService @Inject constructor(
         try {
             val driveService = getDriveService(accountEmail)
             val fileId = findBackupFile(driveService)
-                ?: return@withContext BackupResult.Error("Aucune sauvegarde trouvée sur Drive")
+                ?: return@withContext BackupResult.Error(BackupError.NO_BACKUP_FOUND)
 
             val dbFile = context.getDatabasePath(DB_NAME)
             val tempFile = java.io.File(dbFile.parent, "restore_temp.db")
@@ -117,7 +117,7 @@ class DriveBackupService @Inject constructor(
             BackupResult.Success
         } catch (e: Exception) {
             Log.e(TAG, "Restore failed", e)
-            BackupResult.Error(e.message ?: "Erreur inconnue")
+            BackupResult.Error(BackupError.UNKNOWN, e.message)
         }
     }
 
@@ -146,7 +146,14 @@ class DriveBackupService @Inject constructor(
     }
 }
 
+enum class BackupError {
+    DB_NOT_FOUND,
+    NO_BACKUP_FOUND,
+    NOT_CONNECTED,
+    UNKNOWN,
+}
+
 sealed class BackupResult {
     data object Success : BackupResult()
-    data class Error(val message: String) : BackupResult()
+    data class Error(val error: BackupError, val details: String? = null) : BackupResult()
 }

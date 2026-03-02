@@ -37,6 +37,7 @@ class SyncManager @Inject constructor(
 
     private var syncJob: Job? = null
     private var observerJob: Job? = null
+    private var dbObserver: androidx.room.InvalidationTracker.Observer? = null
 
     init {
         // Load saved state
@@ -68,16 +69,26 @@ class SyncManager @Inject constructor(
     }
 
     private fun startDatabaseObserver(accountEmail: String) {
-        database.invalidationTracker.addObserver(
-            object : androidx.room.InvalidationTracker.Observer(
-                "games", "players", "sessions", "session_players", "round_scores"
-            ) {
-                override fun onInvalidated(tables: Set<String>) {
-                    Log.d(TAG, "Database changed: $tables")
-                    triggerDebouncedSync(accountEmail)
-                }
+        // Remove previous observer to avoid duplicates
+        removeDatabaseObserver()
+
+        val observer = object : androidx.room.InvalidationTracker.Observer(
+            "games", "players", "sessions", "session_players", "round_scores"
+        ) {
+            override fun onInvalidated(tables: Set<String>) {
+                Log.d(TAG, "Database changed: $tables")
+                triggerDebouncedSync(accountEmail)
             }
-        )
+        }
+        dbObserver = observer
+        database.invalidationTracker.addObserver(observer)
+    }
+
+    private fun removeDatabaseObserver() {
+        dbObserver?.let {
+            database.invalidationTracker.removeObserver(it)
+            dbObserver = null
+        }
     }
 
     private fun triggerDebouncedSync(accountEmail: String) {
@@ -104,9 +115,9 @@ class SyncManager @Inject constructor(
             }
             is BackupResult.Error -> {
                 _syncState.update {
-                    it.copy(isSyncing = false, lastError = result.message)
+                    it.copy(isSyncing = false, lastError = result.error.name)
                 }
-                Log.e(TAG, "Auto-sync failed: ${result.message}")
+                Log.e(TAG, "Auto-sync failed: ${result.error} ${result.details ?: ""}")
             }
         }
     }
@@ -123,6 +134,7 @@ class SyncManager @Inject constructor(
 
     suspend fun disableSync() {
         syncJob?.cancel()
+        removeDatabaseObserver()
         context.syncDataStore.edit { prefs ->
             prefs.remove(KEY_ACCOUNT_EMAIL)
             prefs.remove(KEY_ACCOUNT_NAME)
@@ -134,7 +146,7 @@ class SyncManager @Inject constructor(
     }
 
     suspend fun manualBackup(): BackupResult {
-        val email = syncState.value.accountEmail ?: return BackupResult.Error("Non connecté")
+        val email = syncState.value.accountEmail ?: return BackupResult.Error(BackupError.NOT_CONNECTED)
         _syncState.update { it.copy(isSyncing = true) }
         val result = driveBackupService.uploadBackup(email)
         if (result is BackupResult.Success) {
@@ -144,13 +156,13 @@ class SyncManager @Inject constructor(
             }
             _syncState.update { it.copy(isSyncing = false, lastSyncTime = now, lastError = null) }
         } else if (result is BackupResult.Error) {
-            _syncState.update { it.copy(isSyncing = false, lastError = result.message) }
+            _syncState.update { it.copy(isSyncing = false, lastError = result.error.name) }
         }
         return result
     }
 
     suspend fun restoreFromBackup(): BackupResult {
-        val email = syncState.value.accountEmail ?: return BackupResult.Error("Non connecté")
+        val email = syncState.value.accountEmail ?: return BackupResult.Error(BackupError.NOT_CONNECTED)
         _syncState.update { it.copy(isSyncing = true) }
         val result = driveBackupService.restoreBackup(email)
         _syncState.update { it.copy(isSyncing = false) }

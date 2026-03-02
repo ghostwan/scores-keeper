@@ -109,4 +109,8 @@
     <string name="restore_data_message">Les données actuelles seront remplacées par la sauvegarde de Google Drive. L\'application devra être redémarrée.</string>
     <string name="backup_success">Sauvegarde envoyée sur Google Drive</string>
     <string name="restore_success">Données restaurées ! Redémarrez l\'application.</string>
+    <string name="backup_error_db_not_found">Base de données introuvable</string>
+    <string name="backup_error_no_backup">Aucune sauvegarde trouvée sur Drive</string>
+    <string name="backup_error_not_connected">Non connecté</string>
+    <string name="backup_error_unknown">Erreur inconnue</string>
 </resources>

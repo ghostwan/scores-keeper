@@ -1,5 +1,7 @@
 package com.ghostwan.scoreskeeper.data.repository
 
+import androidx.room.withTransaction
+import com.ghostwan.scoreskeeper.data.local.ScoresKeeperDatabase
 import com.ghostwan.scoreskeeper.data.local.dao.GameDao
 import com.ghostwan.scoreskeeper.data.local.dao.PlayerDao
 import com.ghostwan.scoreskeeper.data.local.dao.RoundScoreDao
@@ -21,6 +23,7 @@ import java.time.ZoneId
 import javax.inject.Inject
 
 class SessionRepositoryImpl @Inject constructor(
+    private val database: ScoresKeeperDatabase,
     private val sessionDao: SessionDao,
     private val playerDao: PlayerDao,
     private val gameDao: GameDao,
@@ -89,13 +92,13 @@ class SessionRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun createSession(session: Session): Long {
+    override suspend fun createSession(session: Session): Long = database.withTransaction {
         val sessionId = sessionDao.insertSession(session.toEntity())
         val sessionPlayers = session.playerIds.map { playerId ->
             SessionPlayerEntity(sessionId = sessionId, playerId = playerId)
         }
         sessionDao.insertSessionPlayers(sessionPlayers)
-        return sessionId
+        sessionId
     }
 
     override suspend fun finishSession(sessionId: Long) {
@@ -118,11 +121,11 @@ class SessionRepositoryImpl @Inject constructor(
     override suspend fun deleteRoundScore(roundScore: RoundScore) =
         roundScoreDao.deleteRoundScore(roundScore.toEntity())
 
-    override suspend fun updateRoundScores(roundScores: List<RoundScore>) {
+    override suspend fun updateRoundScores(roundScores: List<RoundScore>) = database.withTransaction {
         roundScores.forEach { roundScoreDao.updateRoundScore(it.toEntity()) }
     }
 
-    override suspend fun deleteRound(sessionId: Long, round: Int) {
+    override suspend fun deleteRound(sessionId: Long, round: Int) = database.withTransaction {
         roundScoreDao.deleteRoundByNumber(sessionId, round)
         roundScoreDao.decrementRoundsAfter(sessionId, round)
     }

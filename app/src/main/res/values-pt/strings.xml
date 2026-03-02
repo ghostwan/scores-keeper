@@ -109,4 +109,8 @@
     <string name="restore_data_message">Os dados atuais serão substituídos pela cópia de segurança do Google Drive. A aplicação terá de ser reiniciada.</string>
     <string name="backup_success">Cópia de segurança enviada para o Google Drive</string>
     <string name="restore_success">Dados restaurados! Reinicie a aplicação.</string>
+    <string name="backup_error_db_not_found">Base de dados não encontrada</string>
+    <string name="backup_error_no_backup">Nenhuma cópia de segurança encontrada no Drive</string>
+    <string name="backup_error_not_connected">Não ligado</string>
+    <string name="backup_error_unknown">Erro desconhecido</string>
 </resources>

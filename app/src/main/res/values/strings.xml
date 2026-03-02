@@ -111,4 +111,8 @@
     <string name="restore_data_message">Current data will be replaced by the Google Drive backup. The app will need to be restarted.</string>
     <string name="backup_success">Backup sent to Google Drive</string>
     <string name="restore_success">Data restored! Restart the app.</string>
+    <string name="backup_error_db_not_found">Database not found</string>
+    <string name="backup_error_no_backup">No backup found on Drive</string>
+    <string name="backup_error_not_connected">Not connected</string>
+    <string name="backup_error_unknown">Unknown error</string>
 </resources>

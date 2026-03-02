@@ -12,7 +12,7 @@ interface RoundScoreDao {
     @Query("SELECT * FROM round_scores WHERE sessionId = :sessionId ORDER BY round ASC, playerId ASC")
     suspend fun getRoundsForSessionOnce(sessionId: Long): List<RoundScoreEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertRoundScore(roundScore: RoundScoreEntity): Long
 
     @Update

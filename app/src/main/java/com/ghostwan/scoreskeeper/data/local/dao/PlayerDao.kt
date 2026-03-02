@@ -15,7 +15,7 @@ interface PlayerDao {
     @Query("SELECT * FROM players WHERE id IN (:ids)")
     suspend fun getPlayersByIds(ids: List<Long>): List<PlayerEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertPlayer(player: PlayerEntity): Long
 
     @Update

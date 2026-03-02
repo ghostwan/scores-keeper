@@ -1,5 +1,6 @@
 package com.ghostwan.scoreskeeper.presentation.screens.session
 
+import android.util.Log
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,13 +19,21 @@ class CreatePlayerViewModel @Inject constructor(
     fun createPlayer(name: String, colorIndex: Int, onCreated: () -> Unit) {
         if (name.isBlank()) return
         viewModelScope.launch {
-            createPlayerUseCase(
-                Player(
-                    name = name.trim(),
-                    avatarColor = PlayerColors[colorIndex.coerceIn(0, PlayerColors.lastIndex)].toArgb().toLong() and 0xFFFFFFFFL,
+            try {
+                createPlayerUseCase(
+                    Player(
+                        name = name.trim(),
+                        avatarColor = PlayerColors[colorIndex.coerceIn(0, PlayerColors.lastIndex)].toArgb().toLong() and 0xFFFFFFFFL,
+                    )
                 )
-            )
-            onCreated()
+                onCreated()
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to create player", e)
+            }
         }
+    }
+
+    companion object {
+        private const val TAG = "CreatePlayerVM"
     }
 }

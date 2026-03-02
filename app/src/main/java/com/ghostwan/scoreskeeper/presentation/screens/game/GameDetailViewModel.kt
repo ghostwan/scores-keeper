@@ -1,5 +1,6 @@
 package com.ghostwan.scoreskeeper.presentation.screens.game
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,6 +30,7 @@ data class GameDetailUiState(
     val showNewSessionSheet: Boolean = false,
     val sessionToDelete: Session? = null,
     val showIconPicker: Boolean = false,
+    val error: String? = null,
 )
 
 @HiltViewModel
@@ -49,8 +51,13 @@ class GameDetailViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val game = gameRepository.getGameById(gameId)
-            _uiState.update { it.copy(game = game, isLoading = false) }
+            try {
+                val game = gameRepository.getGameById(gameId)
+                _uiState.update { it.copy(game = game, isLoading = false) }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to load game", e)
+                _uiState.update { it.copy(isLoading = false, error = e.message) }
+            }
         }
 
         combine(
@@ -90,8 +97,13 @@ class GameDetailViewModel @Inject constructor(
         val minPlayers = _uiState.value.game?.minPlayers ?: 2
         if (players.size < minPlayers) return
         viewModelScope.launch {
-            val sessionId = createSessionUseCase(gameId, players)
-            _uiState.update { it.copy(showNewSessionSheet = false, newSessionId = sessionId) }
+            try {
+                val sessionId = createSessionUseCase(gameId, players)
+                _uiState.update { it.copy(showNewSessionSheet = false, newSessionId = sessionId) }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to create session", e)
+                _uiState.update { it.copy(error = e.message) }
+            }
         }
     }
 
@@ -105,7 +117,12 @@ class GameDetailViewModel @Inject constructor(
         val updatedGame = game.copy(icon = icon)
         _uiState.update { it.copy(game = updatedGame, showIconPicker = false) }
         viewModelScope.launch {
-            gameRepository.updateGame(updatedGame)
+            try {
+                gameRepository.updateGame(updatedGame)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to update game icon", e)
+                _uiState.update { it.copy(game = game, error = e.message) }
+            }
         }
     }
 
@@ -118,8 +135,19 @@ class GameDetailViewModel @Inject constructor(
     fun confirmDeleteSession() {
         val session = _uiState.value.sessionToDelete ?: return
         viewModelScope.launch {
-            deleteSessionUseCase(session)
-            _uiState.update { it.copy(sessionToDelete = null) }
+            try {
+                deleteSessionUseCase(session)
+                _uiState.update { it.copy(sessionToDelete = null) }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to delete session", e)
+                _uiState.update { it.copy(sessionToDelete = null, error = e.message) }
+            }
         }
+    }
+
+    fun clearError() = _uiState.update { it.copy(error = null) }
+
+    companion object {
+        private const val TAG = "GameDetailVM"
     }
 }
