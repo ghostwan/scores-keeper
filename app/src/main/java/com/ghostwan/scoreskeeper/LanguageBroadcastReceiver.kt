@@ -20,7 +20,7 @@ class LanguageBroadcastReceiver : BroadcastReceiver() {
         private const val TAG = "LanguageBroadcast"
         private const val ACTION_SET_LANGUAGE = "com.ghostwan.scoreskeeper.SET_LANGUAGE"
         private const val EXTRA_LANG = "lang"
-        private val SUPPORTED_LANGUAGES = setOf("en", "fr", "es", "de")
+        private val SUPPORTED_LANGUAGES = setOf("en", "fr", "es", "de", "pt")
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -33,7 +33,7 @@ class LanguageBroadcastReceiver : BroadcastReceiver() {
 
         val lang = intent.getStringExtra(EXTRA_LANG)
         if (lang == null) {
-            Log.e(TAG, "Missing 'lang' extra. Usage: --es lang fr|en|es|de|system")
+            Log.e(TAG, "Missing 'lang' extra. Usage: --es lang fr|en|es|de|pt|system")
             return
         }
 

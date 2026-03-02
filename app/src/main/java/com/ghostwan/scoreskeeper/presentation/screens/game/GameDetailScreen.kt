@@ -94,7 +94,7 @@ fun GameDetailScreen(
                                     onClick = {
                                         showRulesMenu = false
                                         val lang = Locale.getDefault().language.let {
-                                            if (it in listOf("fr", "es", "de")) it else "en"
+                                            if (it in listOf("fr", "es", "de", "pt")) it else "en"
                                         }
                                         val query = URLEncoder.encode(game.name, "UTF-8")
                                         val url = "https://$lang.wikipedia.org/wiki/Special:Search/$query"
@@ -116,12 +116,13 @@ fun GameDetailScreen(
                                         }
                                         if (isGeminiInstalled) {
                                             val lang = Locale.getDefault().language.let {
-                                                if (it in listOf("fr", "es", "de")) it else "en"
+                                                if (it in listOf("fr", "es", "de", "pt")) it else "en"
                                             }
                                             val promptText = when (lang) {
                                                 "fr" -> "Explique-moi les règles du jeu ${game.name} en français de manière claire et concise"
                                                 "es" -> "Explícame las reglas del juego ${game.name} en español de forma clara y concisa"
                                                 "de" -> "Erkläre mir die Regeln des Spiels ${game.name} auf Deutsch klar und prägnant"
+                                                "pt" -> "Explica-me as regras do jogo ${game.name} em português de forma clara e concisa"
                                                 else -> "Explain the rules of the game ${game.name} in English clearly and concisely"
                                             }
                                             val intent = Intent(Intent.ACTION_SEND).apply {

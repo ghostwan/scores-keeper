@@ -1,0 +1,112 @@
+<resources>
+    <!-- Common -->
+    <string name="back">Voltar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Eliminar</string>
+    <string name="create">Criar</string>
+    <string name="settings">Definições</string>
+    <string name="pts">pts</string>
+
+    <!-- Home -->
+    <string name="new_game">Novo jogo</string>
+    <string name="delete_game_title">Eliminar %1$s?</string>
+    <string name="delete_game_message">Todas as sessões associadas também serão eliminadas.</string>
+    <string name="players_range">%1$d–%2$d jogadores</string>
+    <string name="players_range_unlimited">%1$d+ jogadores</string>
+    <string name="lowest_score_wins_suffix"> · Pontuação mais baixa ganha</string>
+    <string name="game_rules">Regras do jogo</string>
+    <string name="game_icon_label">Ícone do jogo</string>
+    <string name="rules_wikipedia">Pesquisar na Wikipédia</string>
+    <string name="rules_gemini_app">Perguntar ao Gemini (app)</string>
+    <string name="rules_gemini_not_installed">A aplicação Gemini não está instalada</string>
+    <string name="no_games_created">Nenhum jogo criado</string>
+    <string name="create_first_game">Criar o meu primeiro jogo</string>
+
+    <!-- Create Game -->
+    <string name="create_game_title">Criar um jogo</string>
+    <string name="game_name_label">Nome do jogo *</string>
+    <string name="game_name_placeholder">ex. Uno, Tarot, 7 Wonders…</string>
+    <string name="description_label">Descrição (opcional)</string>
+    <string name="description_placeholder">Regras especiais, notas…</string>
+    <string name="min_players">Jogadores mín</string>
+    <string name="max_players">Jogadores máx</string>
+    <string name="lowest_score_wins">Pontuação mais baixa ganha</string>
+    <string name="lowest_score_wins_description">Para jogos de cartas onde o objetivo é ter menos pontos</string>
+    <string name="save">Guardar</string>
+
+    <!-- Game Detail -->
+    <string name="game_fallback">Jogo</string>
+    <string name="new_session">Nova sessão</string>
+    <string name="general_ranking">Classificação geral</string>
+    <string name="sessions_header">Sessões</string>
+    <string name="no_sessions_played">Nenhuma sessão jogada</string>
+    <string name="delete_session_title">Eliminar esta sessão?</string>
+    <string name="delete_session_message">Todas as pontuações desta sessão serão eliminadas permanentemente.</string>
+    <string name="stats_subtitle">%1$d sessões · %2$d vitórias</string>
+    <string name="win_rate">taxa de vitórias</string>
+    <string name="session_players_count">%1$d jogadores · </string>
+    <string name="status_in_progress">Em curso</string>
+    <string name="status_finished">Terminada</string>
+    <string name="choose_players">Escolher jogadores</string>
+    <string name="players_selection_subtitle">%1$d a %2$d jogadores — %3$d selecionado(s)</string>
+    <string name="players_selection_subtitle_unlimited">%1$d+ jogadores — %2$d selecionado(s)</string>
+    <string name="add_player">Adicionar um jogador</string>
+    <string name="no_players_created">Nenhum jogador criado. Toque em + para adicionar.</string>
+    <string name="start_session">Iniciar sessão</string>
+    <string name="new_player">Novo jogador</string>
+    <string name="player_name_label">Nome / Apelido</string>
+    <string name="edit_player_name_title">Editar nome do jogador</string>
+    <string name="color_label">Cor:</string>
+
+    <!-- Session -->
+    <string name="session_fallback">Sessão</string>
+    <string name="finish">Terminar</string>
+    <string name="add_round">Adicionar uma ronda</string>
+    <string name="scores_header">Pontuações</string>
+    <string name="score_evolution">Evolução das pontuações</string>
+    <string name="rounds_history">Histórico de rondas</string>
+    <string name="finish_session_title">Terminar a sessão?</string>
+    <string name="finish_session_message">A classificação atual será guardada permanentemente.</string>
+    <string name="delete_round_title">Eliminar a ronda %1$d?</string>
+    <string name="delete_round_message">As pontuações desta ronda serão eliminadas permanentemente.</string>
+    <string name="victory">Vitória!</string>
+    <string name="tie">Empate!</string>
+    <string name="round_number">Ronda %1$d</string>
+    <string name="edit">Editar</string>
+    <string name="edit_round_title">Editar ronda %1$d</string>
+    <string name="new_round_title">Ronda %1$d — Introduzir pontuações</string>
+    <string name="edit_round_button">Editar ronda</string>
+    <string name="validate_round_button">Validar ronda</string>
+
+    <!-- Settings -->
+    <string name="google_drive_backup">Cópia de segurança Google Drive</string>
+    <string name="syncing">A sincronizar…</string>
+    <string name="last_sync">Última sincronização: %1$s</string>
+    <string name="error_prefix">Erro: %1$s</string>
+    <string name="auto_sync_info">A sincronização é automática após cada alteração.</string>
+
+    <string name="backup_button">Fazer cópia</string>
+    <string name="restore_button">Restaurar</string>
+    <string name="disconnect">Desligar</string>
+    <string name="connect_google_drive_info">Ligue a sua conta Google para fazer cópia de segurança automática dos seus dados no Google Drive.</string>
+    <!-- Display preferences -->
+    <string name="display_section">Visualização</string>
+    <string name="chart_area_fill">Gráfico de área</string>
+    <string name="chart_area_fill_description">Preencher a área sob as curvas de pontuação</string>
+    <string name="chart_start_from_zero">Começar do zero</string>
+    <string name="chart_start_from_zero_description">As curvas de pontuação começam do zero em vez da primeira ronda</string>
+
+
+    <!-- Language -->
+    <string name="language_section">Idioma</string>
+    <string name="language_label">Idioma da aplicação</string>
+    <string name="language_system">Predefinição do sistema</string>
+
+    <string name="about">Sobre</string>
+    <string name="version">Versão %1$s</string>
+    <string name="connect_google_drive">Ligar Google Drive</string>
+    <string name="restore_data_title">Restaurar dados?</string>
+    <string name="restore_data_message">Os dados atuais serão substituídos pela cópia de segurança do Google Drive. A aplicação terá de ser reiniciada.</string>
+    <string name="backup_success">Cópia de segurança enviada para o Google Drive</string>
+    <string name="restore_success">Dados restaurados! Reinicie a aplicação.</string>
+</resources>
