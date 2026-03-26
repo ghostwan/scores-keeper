@@ -33,14 +33,14 @@ RELEASE=false
 for arg in "$@"; do
   case $arg in
     --clean)   CLEAN=true ;;
-    --release) RELEASE=true; BUILD_VARIANT="assembleRelease"; APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk" ;;
+    --release) RELEASE=true; BUILD_VARIANT="assembleRelease"; APK_PATH="app/build/outputs/apk/release/app-release.apk" ;;
     --help|-h)
       echo ""
       echo "Usage: $0 [options]"
       echo ""
       echo "Options:"
       echo "  --clean     Nettoie le build avant de compiler"
-      echo "  --release   Compile en mode release (non signé)"
+      echo "  --release   Compile en mode release"
       echo "  --help      Affiche cette aide"
       echo ""
       exit 0
